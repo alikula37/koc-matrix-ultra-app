@@ -1,29 +1,39 @@
 {
-	# Local + Tailscale HTTPS via Caddy
-	# Replace koc-matrix.ts.net with your Tailscale MagicDNS name
+	# Caddy + Tailscale — local ağ + iPhone/Android dışarıdan aynı adres
+	# Tailscale MagicDNS için: tailscale up + bu Caddyfile'da hostname uncomment et
+	# Caddy otomatik Let's Encrypt / Tailscale cert alır (local HTTPS)
+	admin off
 }
 
+# Local dev — http://localhost
 :80, :443 {
-	# Frontend — Next.js
+	@api path /api/* /docs* /openapi.json
+	handle @api {
+		reverse_proxy backend:8000
+	}
 	handle /* {
 		reverse_proxy frontend:3000
 	}
-	# Backend API
-	handle /api/* {
-		reverse_proxy backend:8000
-	}
-	handle /docs* {
-		reverse_proxy backend:8000
-	}
-	handle /openapi.json {
-		reverse_proxy backend:8000
-	}
-	log {
-		output stdout
+	log { output stdout }
+	header {
+		# PWA & security
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Frame-Options "DENY"
 	}
 }
 
-# Tailscale example (uncomment & set real hostname):
-# koc-matrix.ts.net {
+# Tailscale — koc-matrix.<tailnet>.ts.net (gerçek tailnet adını yaz, uncomment et)
+# koc-matrix.tail-scale.ts.net {
+# 	@api path /api/* /docs* /openapi.json
+# 	handle @api { reverse_proxy backend:8000 }
+# 	handle /* { reverse_proxy frontend:3000 }
+# 	log { output stdout }
+# 	tls {
+# 		get_certificate tailscale
+# 	}
+# }
+
+# Prod örneği — kendi domainin varsa:
+# kocmatrix.example.com {
 # 	reverse_proxy frontend:3000
 # }

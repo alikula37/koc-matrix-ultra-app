@@ -1,0 +1,5 @@
+# m h dom mon dow command
+# Günlük 03:00 IST = 00:00 UTC
+0 0 * * * /usr/local/bin/backup.sh
+# Haftalık rclone zaten backup.sh içinde Pazar kontrolü var, ama cron da eklenebilir:
+# 0 1 * * 0 /usr/local/bin/backup.sh

@@ -5,14 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function AnalyticsPage() {
   const [data, setData]=useState<any>(null)
-  useEffect(()=>{ api.analytics().then(setData).catch(()=>{}) },[])
+  const [period, setPeriod]=useState<any>(null)
+  useEffect(()=>{
+    api.analytics().then(setData).catch(()=>{})
+    // period summary for PDF
+    fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/analytics/period-summary?period=monthly`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setPeriod).catch(()=>{})
+  },[])
   if(!data) return <div className="py-10 text-center text-[#64748b]">Yükleniyor…</div>
   const exportPdf = () => window.print()
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 print:bg-white">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold">Gelişmiş Analitik</h1>
-        <button onClick={exportPdf} className="text-xs bg-[#1e293b] border border-[#334155] px-3 py-1.5 rounded-full">PDF Export (print)</button>
+        <h1 className="text-lg font-bold">Gelişmiş Analitik — R & ₺ Paralel</h1>
+        <div className="flex gap-2">
+          <button onClick={exportPdf} className="text-xs bg-[#1e293b] border border-[#334155] px-3 py-1.5 rounded-full">PDF Export (print)</button>
+          {period && <span className="text-xs bg-[#00ff88]/10 border border-[#00ff88]/20 text-[#00ff88] px-3 py-1.5 rounded-full">Bu Ay: {period.basic?.total_r}R / {period.basic?.total_cash}₺ • En iyi setup: {period.best_setup||"-"}</span>}
+        </div>
       </div>
       <div className="grid md:grid-cols-2 gap-3">
         <Card><CardHeader><CardTitle>EXPECTANCY & PAYOFF</CardTitle></CardHeader><CardContent className="text-sm space-y-1 mono">

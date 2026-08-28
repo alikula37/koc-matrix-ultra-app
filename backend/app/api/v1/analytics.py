@@ -49,11 +49,25 @@ async def summary(
     indicator_bd = breakdown_by(dicts, "indicators_used")
     # account
     account_bd = breakdown_by(dicts, "account_id")
-    # time: weekday
+    # time: weekday & hour — İstanbul'a normalize (prompt §3)
+    from zoneinfo import ZoneInfo
+    IST = ZoneInfo("Europe/Istanbul")
     for d in dicts:
-        d["weekday"] = d["entry_date"].strftime("%A") if d["entry_date"] else "Bilinmeyen"
-        # hour bucket Istanbul (trade dates are already Istanbul)
-        d["hour_bucket"] = f"{d['entry_date'].hour:02d}:00" if d["entry_date"] else "00:00"
+        dt = d["entry_date"]
+        if dt:
+            # ensure timezone aware, convert to IST
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+            dt_ist = dt.astimezone(IST)
+            # Map English weekday to Turkish for UI, but keep English key for now
+            tr_weekday = {"Monday":"Pazartesi","Tuesday":"Salı","Wednesday":"Çarşamba","Thursday":"Perşembe","Friday":"Cuma","Saturday":"Cumartesi","Sunday":"Pazar"}.get(dt_ist.strftime("%A"), dt_ist.strftime("%A"))
+            d["weekday"] = tr_weekday
+            d["hour_bucket"] = f"{dt_ist.hour:02d}:00"
+            # also keep IST date for heatmap grouping
+            d["ist_date"] = dt_ist.date().isoformat()
+        else:
+            d["weekday"] = "Bilinmeyen"
+            d["hour_bucket"] = "00:00"
     weekday_bd = breakdown_by(dicts, "weekday")
     hour_bd = breakdown_by(dicts, "hour_bucket")
 
@@ -88,15 +102,21 @@ async def heatmap(
     db: AsyncSession = Depends(get_db),
     current: User = Depends(get_current_user)
 ):
+    from zoneinfo import ZoneInfo
+    IST = ZoneInfo("Europe/Istanbul")
     q = select(Trade).where(Trade.user_id==current.id, Trade.deleted_at.is_(None))
     res = await db.execute(q)
     trades = res.scalars().all()
-    # group by date
     from collections import defaultdict
     by_date = defaultdict(list)
     for t in trades:
-        d = t.entry_date.date().isoformat() if t.entry_date else None
-        if d and str(t.entry_date.year)==str(year):
+        if not t.entry_date:
+            continue
+        dt = t.entry_date
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+        d = dt.astimezone(IST).date().isoformat()
+        if str(dt.astimezone(IST).year)==str(year):
             by_date[d].append(t)
     out = []
     for d, lst in by_date.items():
@@ -104,3 +124,45 @@ async def heatmap(
         total_cash = sum(x.net_pnl_cash or 0 for x in lst)
         out.append({"date": d, "total_r": round(total_r,2), "total_cash": round(total_cash,2), "count": len(lst)})
     return sorted(out, key=lambda x: x["date"])
+
+@router.get("/period-summary")
+async def period_summary(
+    period: str = Query("monthly", description="daily|weekly|monthly"),
+    year: int | None = None,
+    month: int | None = None,
+    db: AsyncSession = Depends(get_db),
+    current: User = Depends(get_current_user)
+):
+    """Haftalık & aylık otomatik özet kartı — PDF export için JSON"""
+    from zoneinfo import ZoneInfo
+    IST = ZoneInfo("Europe/Istanbul")
+    import calendar
+    from datetime import datetime
+    now = datetime.now(IST)
+    y = year or now.year
+    m = month or now.month
+    q = select(Trade).where(Trade.user_id==current.id, Trade.deleted_at.is_(None))
+    res = await db.execute(q)
+    trades = res.scalars().all()
+    # filter by period
+    filtered = []
+    for t in trades:
+        if not t.entry_date: continue
+        dt = t.entry_date
+        if dt.tzinfo is None: dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+        dt = dt.astimezone(IST)
+        if period=="daily" and dt.date()==now.date():
+            filtered.append(t)
+        elif period=="weekly" and dt.isocalendar()[1]==now.isocalendar()[1] and dt.year==y:
+            filtered.append(t)
+        elif period=="monthly" and dt.year==y and dt.month==m:
+            filtered.append(t)
+        elif period not in ("daily","weekly","monthly"):
+            filtered.append(t)
+    dicts = [{"net_pnl_r":t.net_pnl_r,"net_pnl_cash":t.net_pnl_cash,"planned_rr":t.planned_rr,"realized_rr":t.realized_rr,"emotions":t.emotions,"setups":t.setups,"indicators_used":t.indicators_used,"account_id":t.account_id,"entry_date":t.entry_date} for t in filtered]
+    basic = compute_basic_metrics(dicts)
+    # best setup by expectancy
+    from app.services.analytics import breakdown_by
+    by_setup = breakdown_by(dicts, "setups")
+    best_setup = max(by_setup.items(), key=lambda x: x[1]["expectancy"])[0] if by_setup else None
+    return {"period":period, "year":y, "month":m, "basic":basic, "best_setup":best_setup, "by_setup":by_setup, "count":len(filtered)}

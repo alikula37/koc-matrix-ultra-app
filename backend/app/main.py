@@ -14,6 +14,11 @@ from app.api.v1.trades import router as trades_router, manager
 from app.api.v1.analytics import router as analytics_router
 from app.api.v1.webhooks import router as webhooks_router
 from app.api.v1.accounts import router as accounts_router
+from app.api.v1.refs import setups_router, indicators_router, emotions_router
+from app.api.v1.media import router as media_router
+from app.api.v1.notifications import router as notifications_router
+from fastapi.staticfiles import StaticFiles
+import pathlib
 
 app = FastAPI(
     title="Koç Matrix Ultra — Trading Journal Engine",
@@ -34,6 +39,38 @@ app.include_router(trades_router, prefix="/api/v1")
 app.include_router(analytics_router, prefix="/api/v1")
 app.include_router(webhooks_router, prefix="/api/v1")
 app.include_router(accounts_router, prefix="/api/v1")
+app.include_router(setups_router, prefix="/api/v1/refs")
+app.include_router(indicators_router, prefix="/api/v1/refs")
+app.include_router(emotions_router, prefix="/api/v1/refs")
+app.include_router(media_router, prefix="/api/v1")
+app.include_router(notifications_router, prefix="/api/v1")
+
+# Scheduler — daily/weekly/monthly + drawdown/streak via IST
+try:
+    from app.services.scheduler import start_scheduler
+    start_scheduler(app)
+except Exception as e:
+    print(f"[scheduler] not started: {e}")
+
+# Serve media statically if exists (fallback)
+media_path = pathlib.Path("/app/media")
+if media_path.exists():
+    app.mount("/media", StaticFiles(directory=str(media_path)), name="media")
+
+@app.get("/openapi.json", include_in_schema=False)
+async def export_openapi():
+    return app.openapi()
+
+# Export on startup for CI to commit openapi.json
+@app.on_event("startup")
+async def dump_openapi():
+    try:
+        import json, pathlib
+        p = pathlib.Path("/app/openapi.json")
+        if not p.exists():
+            p.write_text(json.dumps(app.openapi(), indent=2, ensure_ascii=False))
+    except Exception:
+        pass
 
 @app.get("/api/v1/health")
 async def health(db: AsyncSession = Depends(get_db)):
