@@ -1,0 +1,24 @@
+{
+  "name": "koc-matrix-wrapper",
+  "version": "1.0.0",
+  "description": "macOS menü çubuğu wrapper — Docker Desktop kontrol + ghcr.io pull + docker compose up",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac dmg",
+    "tauri:build": "tauri build"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.kocmatrix.ultra",
+    "productName": "Koç Matrix Ultra",
+    "mac": { "target": "dmg", "category": "public.app-category.finance" },
+    "directories": { "output": "../dist" }
+  }
+}

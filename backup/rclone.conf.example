@@ -1,0 +1,13 @@
+# rclone config — copy to backup/rclone.conf and mount as /rclone.conf in backup container
+# For Google Drive:
+# [remote]
+# type = drive
+# scope = drive
+# token = {"access_token":"..."}
+# For S3:
+# [remote]
+# type = s3
+# provider = AWS
+# access_key_id = ...
+# secret_access_key = ...
+# region = eu-central-1

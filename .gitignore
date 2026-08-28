@@ -1,11 +1,48 @@
-node_modules
-dist
-dist-ssr
-*.local
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
 .env
 .env.local
-.DS_Store
-coverage
-.vscode
-.idea
+.env.*.local
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+.next/
+out/
+coverage/
 *.log
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Docker
+backups/*.sql.gz
+!backups/.gitkeep
+pg_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Media & uploads
+backend/media/
+frontend/public/icon-*.png
+
+# Build
+dist/
+wrapper/dist/
+
+# Caddy
+caddy_data/

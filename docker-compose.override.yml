@@ -1,0 +1,21 @@
+# Development overrides — `docker compose up` uses this by default (dev profile)
+# Prod uses `docker compose --profile prod up -d`
+services:
+  backend:
+    command: >
+      bash -c "alembic upgrade head &&
+               uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app"
+    environment:
+      ENV: development
+      LOG_LEVEL: debug
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+
+  db:
+    ports:
+      - "5432:5432"

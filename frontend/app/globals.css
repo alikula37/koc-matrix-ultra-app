@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 3%;
+    --foreground: 210 40% 98%;
+    --card: 222 30% 10%;
+    --card-foreground: 210 40% 98%;
+    --primary: 142 100% 50%;
+    --primary-foreground: 222 47% 3%;
+    --secondary: 217 19% 27%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 19% 27%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 193 100% 50%;
+    --accent-foreground: 222 47% 3%;
+    --border: 217 19% 18%;
+    --input: 217 19% 18%;
+    --ring: 142 100% 50%;
+    --radius: 0.75rem;
+  }
+}
+* { scrollbar-width: thin; scrollbar-color: #334155 #020617; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+body { background: #020617; color: #f8fafc; font-family: Inter, system-ui, sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }

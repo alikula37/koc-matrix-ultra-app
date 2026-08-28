@@ -1,0 +1,29 @@
+{
+	# Local + Tailscale HTTPS via Caddy
+	# Replace koc-matrix.ts.net with your Tailscale MagicDNS name
+}
+
+:80, :443 {
+	# Frontend — Next.js
+	handle /* {
+		reverse_proxy frontend:3000
+	}
+	# Backend API
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+	handle /docs* {
+		reverse_proxy backend:8000
+	}
+	handle /openapi.json {
+		reverse_proxy backend:8000
+	}
+	log {
+		output stdout
+	}
+}
+
+# Tailscale example (uncomment & set real hostname):
+# koc-matrix.ts.net {
+# 	reverse_proxy frontend:3000
+# }
