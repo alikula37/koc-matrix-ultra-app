@@ -6,7 +6,7 @@ import { setToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 
 export default function LoginPage(){
-  const [email,setEmail]=useState("trader@kocmatrix.local")
+  const [email,setEmail]=useState("trader@kocmatrix.com")
   const [password,setPassword]=useState("KocMatrix2025!")
   const [pin,setPin]=useState("")
   const [err,setErr]=useState("")
@@ -36,7 +36,7 @@ export default function LoginPage(){
         <Button type="submit" disabled={loading} className="w-full">{loading?"Giriş...":"Giriş Yap"}</Button>
       </form>
       <div className="text-center text-xs text-[#64748b]">Hesabın yok mu? <Link href="/register" className="text-[#00ff88]">Kayıt Ol</Link> • <Link href="/" className="text-[#94a3b8]">Ana Sayfa</Link></div>
-      <div className="text-[11px] bg-[#020617] border border-[#1e293b] rounded-lg p-2.5 text-[#64748b]">Demo: <span className="text-white mono">trader@kocmatrix.local / KocMatrix2025!</span> — `backend/seed.py` ile oluşturulur</div>
+      <div className="text-[11px] bg-[#020617] border border-[#1e293b] rounded-lg p-2.5 text-[#64748b]">Demo: <span className="text-white mono">trader@kocmatrix.com / KocMatrix2025!</span> — `backend/seed.py` ile oluşturulur</div>
     </div>
   )
 }

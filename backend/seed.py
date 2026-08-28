@@ -27,11 +27,20 @@ async def seed():
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-        # user
-        result = await db.execute(select(User).where(User.email=="trader@kocmatrix.local"))
+        # user — use .com (email-validator rejects .local)
+        result = await db.execute(select(User).where(User.email=="trader@kocmatrix.com"))
         user = result.scalar_one_or_none()
         if not user:
-            user = User(email="trader@kocmatrix.local", hashed_password=hash_password("KocMatrix2025!"), full_name="Koç Trader")
+            # migrate old .local if exists
+            old = await db.execute(select(User).where(User.email=="trader@kocmatrix.local"))
+            user = old.scalar_one_or_none()
+            if user:
+                user.email = "trader@kocmatrix.com"
+                await db.commit()
+                await db.refresh(user)
+                print(f"migrated {user.email} id={user.id}")
+            else:
+                user = User(email="trader@kocmatrix.com", hashed_password=hash_password("KocMatrix2025!"), full_name="Koç Trader")
             db.add(user)
             await db.commit()
             await db.refresh(user)
