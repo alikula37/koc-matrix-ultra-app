@@ -78,13 +78,25 @@
       "breakdownSetup": "SETUP BAZLI",
       "breakdownHour": "SAATLİK DAĞILIM (İST)",
       "breakdownAccount": "HESAP BAZLI",
-      "accountLabel": "Hesap #{id}"
+      "accountLabel": "Hesap #{id}",
+      "equityHint": "Yeşil = realize • Kesikli mavi/sarı = açıkların anlık etkisi"
     },
     "chart": {
       "winRateUnit": "%",
       "tradesUnit": "işlem",
       "rExp": "R beklenti"
-    }
+    },
+    "openImpact": "{count} açık → floating",
+    "favoritesStrip": "FAVORİLER ★ CANLI",
+    "liveHint": "Canlı fiyat 5sn’de bir Binance/Yahoo’dan",
+    "liveError": "Canlı veri yok",
+    "legendRealized": "Gerçekleşen",
+    "legendUnrealized": "Anlık (Floating)",
+    "legendWin": "Kâr noktası",
+    "legendLoss": "Zarar noktası",
+    "openTradesBadge": "{count} açık → {value} floating",
+    "openTradesTitle": "{count} Açık İşlem",
+    "openImpactValue": "Anlık Etki: {value}"
   },
   "Trades": {
     "title": "İşlemler",
@@ -120,11 +132,38 @@
       "rr": "Plan RR {plan} • Gerçek {real}",
       "history": "Geçmiş",
       "exits": "Çıkışlar: {exits}",
-      "softDeleted": "Soft silindi"
+      "softDeleted": "Soft silindi",
+      "cancelled": "İPTAL",
+      "noLive": "canlı bekleniyor…"
     },
     "detail": {
       "editHistory": "Edit History — İlk not neydi?",
       "noHistory": "Düzenleme yok"
+    },
+    "favorites": {
+      "title": "★ FAVORİ ÜRÜNLER",
+      "hint": "Tıkla → sembolü doldurur, canlı fiyat otomatik gelir",
+      "empty": "Favori yok — aşağıdan ekle",
+      "placeholder": "BTCUSDT / THYAO / AAPL",
+      "add": "Ekle"
+    },
+    "live": {
+      "fetching": "çekiliyor…",
+      "noData": "canlı fiyat yok",
+      "fill": "→ Doldur"
+    },
+    "actions": {
+      "close": "Kapat",
+      "cancel": "İptal Et",
+      "closeTitle": "{symbol} — İşlemi Kapat",
+      "closeDesc": "Bu işlem kapanmış statüsüne geçecek. Onay için kapanış fiyatını kontrol et.",
+      "closePrice": "Kapanış Fiyatı (canlı fiyat önerildi)",
+      "liveHint": "Güncel piyasa fiyatı otomatik dolduruldu — değiştirebilirsin.",
+      "confirmClose": "Kapatmayı Onayla",
+      "cancelTitle": "{symbol} — İptal Et",
+      "cancelDesc": "Hatalı/yanlış girilen işlem iptal edilecek, PnL sıfırlanacak ve statü CANCELLED olacak.",
+      "cancelWarning": "Dikkat: Kapalı işlemler iptal edilemez. Bu işlem silinmez, sadece iptal statüsüne geçer.",
+      "confirmCancel": "İptali Onayla"
     }
   },
   "Calendar": {
@@ -142,6 +181,20 @@
       "friday": "Cum",
       "saturday": "Cmt",
       "sunday": "Paz"
+    },
+    "heatmapHint": "Koyu = yüksek kazanç/kayıp, açık = zayıf",
+    "legend": {
+      "profit": "Kâr",
+      "loss": "Zarar",
+      "intensity": "Maks {max} ölçeğinde yoğunluk"
+    },
+    "tooltip": {
+      "winRate": "WR %{value}",
+      "clickForDetails": "Tıkla → detay modal"
+    },
+    "metrics": {
+      "r": "R",
+      "cash": "{cur}"
     }
   },
   "Analytics": {
@@ -151,7 +204,15 @@
     "summary": "Bu Ay: {r}R / {cash}₺ • En iyi setup: {setup}",
     "sections": {
       "expectancyPayoff": "BEKLENTİ & PAYOFF",
-      "timeBreakdown": "ZAMAN DAĞILIMI — Gün / Saat (İST)"
+      "timeBreakdown": "ZAMAN DAĞILIMI — Gün / Saat (İST)",
+      "bySymbol": "SEMBOL BAZLI KIRILIM",
+      "bySymbolHint": "En kârlı / en zararlı ürün",
+      "longShort": "LONG vs SHORT",
+      "bySetup": "SETUP / STRATEJİ KIRILIMI",
+      "bySetupHint": "Expectancy’ye göre sıralı",
+      "byEmotion": "DUYGU BAZLI",
+      "byIndicator": "İNDİKATÖR BAZLI",
+      "dayHint": "Pazartesi en iyi mi?"
     },
     "metrics": {
       "expectancy": "Beklenti",
