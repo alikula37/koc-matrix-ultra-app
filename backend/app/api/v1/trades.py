@@ -151,10 +151,16 @@ async def close_trade(trade_id: int, payload: dict | None = None, db: AsyncSessi
             exit_time = datetime.utcnow()
     else:
         exit_time = datetime.utcnow()
-    # reuse exit creation logic
+    # reuse exit creation logic — SHORT/LONG, komisyon oransal, slippage dahil
     pnl_cash = (exit_price - trade.entry_price) * exit_quantity if trade.direction=="LONG" else (trade.entry_price - exit_price) * exit_quantity
-    # commission proportional share
+    # commission proportional share (kısmi kapanışta kalan için doğru)
     pnl_cash -= (trade.commission_fees * (exit_quantity / trade.position_size)) if trade.commission_fees else 0
+    # slippage (kayma) — net R'ye dahil (spec 4.3)
+    try:
+        slippage = float(body.get("slippage", 0) or 0)
+    except Exception:
+        slippage = 0
+    pnl_cash -= slippage
     risk_per_unit = abs(trade.entry_price - trade.stop_loss) if trade.stop_loss else trade.entry_price * 0.02
     pnl_r = pnl_cash / (risk_per_unit * trade.position_size) if risk_per_unit else 0
     exit_row = TradeExit(trade_id=trade_id, exit_price=exit_price, exit_quantity=exit_quantity, exit_time=exit_time, exit_reason=exit_reason, pnl_cash=round(pnl_cash,2), pnl_r=round(pnl_r,3))
@@ -217,9 +223,16 @@ async def add_exit(trade_id: int, data: TradeExitCreate, db: AsyncSession = Depe
     res = await db.execute(select(Trade).where(Trade.id==trade_id, Trade.user_id==current.id, Trade.deleted_at.is_(None)).options(selectinload(Trade.exits)))
     trade = res.scalar_one_or_none()
     if not trade: raise HTTPException(404, "Trade yok")
-    # calculate pnl per exit
+    # calculate pnl per exit — komisyon oransal, slippage dahil, SHORT doğru
+    # SHORT: düşüş artı R — (entry - exit)*qty
     pnl_cash = (data.exit_price - trade.entry_price) * data.exit_quantity if trade.direction=="LONG" else (trade.entry_price - data.exit_price) * data.exit_quantity
-    pnl_cash -= trade.commission_fees  # distribute? simplified deduct full each exit first -> later aggregate will be sum
+    # Komisyon: oransal pay (kısmi kapanışta kalan için doğru)
+    total_fees = trade.commission_fees or 0
+    fee_share = total_fees * (data.exit_quantity / trade.position_size) if trade.position_size else total_fees
+    pnl_cash -= fee_share
+    # Slippage varsa (opsiyonel, close_trade üzerinden) — add_exit için data.slippage yoksa 0
+    slippage = float(getattr(data, "slippage", 0) or 0)
+    pnl_cash -= slippage
     # R: risk per unit = |entry - sl|
     risk_per_unit = abs(trade.entry_price - trade.stop_loss) if trade.stop_loss else trade.entry_price * 0.02  # fallback 2%
     pnl_r = pnl_cash / (risk_per_unit * trade.position_size) if risk_per_unit else 0

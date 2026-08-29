@@ -6,9 +6,6 @@ on:
   push:
     tags:
       - "v*.*.*"
-      - "*-v*.*.*"
-      - "wrapper-v*.*.*"
-      - "koc-matrix-ultra-app-v*.*.*"
   release:
     types: [created, published]
   workflow_dispatch:
@@ -26,14 +23,14 @@ jobs:
         include:
           - os: macos-latest
             arch: universal
-            dist_cmd: "npm run dist:mac --prefix wrapper"
+            dist_cmd: "npm run dist:mac"
           - os: windows-latest
             arch: x64
-            dist_cmd: "npm run dist:win --prefix wrapper"
+            dist_cmd: "npm run dist:win"
           # İsteğe bağlı: Linux AppImage de eklenebilir
           # - os: ubuntu-latest
           #   arch: x64
-          #   dist_cmd: "npx --prefix wrapper electron-builder --linux"
+          #   dist_cmd: "npx electron-builder --linux"
 
     runs-on: ${{ matrix.os }}
 
@@ -49,22 +46,20 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: |
-            wrapper/package-lock.json
-            wrapper/package.json
             package-lock.json
+            package.json
 
-      - name: Install dependencies (wrapper)
+      - name: Install dependencies
         run: |
-          npm ci --prefix wrapper || npm install --prefix wrapper
-          # electron + electron-builder zaten wrapper/package.json'da tanımlı
-          # paket lock yoksa fallback install kullanır
+          npm ci || npm install
+          # electron + electron-builder + electron-vite src/main üzerinden (wrapper kaldırıldı)
 
       - name: Show versions
         run: |
           node --version
           npm --version
-          npx --prefix wrapper electron-builder --version || true
-          cat wrapper/package.json | grep -E '"version"|electron-builder|electron-updater' || true
+          npx electron-builder --version || true
+          cat package.json | grep -E '"version"|electron-builder|electron-updater|electron-vite' || true
 
       - name: Build — ${{ matrix.os }} (${{ matrix.arch }})
         env:

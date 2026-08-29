@@ -15,25 +15,7 @@
         { "type": "refactor", "section": "Refactors", "hidden": true },
         { "type": "test", "section": "Tests", "hidden": true }
       ]
-    },
-    "wrapper": {
-      "release-type": "node",
-      "package-name": "koc-matrix-wrapper",
-      "include-v-in-tag": true,
-      "include-component-in-tag": false,
-      "changelog-types": [
-        { "type": "feat", "section": "Features", "hidden": false },
-        { "type": "fix", "section": "Bug Fixes", "hidden": false },
-        { "type": "perf", "section": "Performance", "hidden": false },
-        { "type": "chore", "section": "Chores", "hidden": true }
-      ]
     }
   },
-  "plugins": [
-    {
-      "type": "linked-versions",
-      "groupName": "Koç Matrix Ultra",
-      "components": [".", "wrapper"]
-    }
-  ]
+  "plugins": []
 }

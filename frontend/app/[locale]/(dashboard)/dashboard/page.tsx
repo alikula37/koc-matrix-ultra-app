@@ -1,15 +1,60 @@
 "use client"
 // cache-bust: 2026-08-29 dashboard dual equity + floating + markers + X format + favorites strip
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, memo, useCallback } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { api } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatR, formatCash, localeToIntl, currencyForLocale, formatChartDate } from "@/lib/utils"
 import { getLivePrices, computeFloatingR, computeFloatingCash } from "@/lib/market"
 import { getFavorites } from "@/lib/favorites"
-import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, Tooltip, CartesianGrid, Scatter, ReferenceDot } from "recharts"
+import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, Tooltip, CartesianGrid, Scatter } from "recharts"
 
 type LiveMap = Record<string, { price:number }>
+
+// Perf: Equity grafiği 5sn poll'de donmasın — React.memo + useMemo izole
+const EquityChart = memo(function EquityChart({
+  chartData, rMode, floatingR, locale, cur, intlLocale, openCount,
+  yKeyRealized, yKeyTotal, winKey, lossKey, legendRealized, legendUnrealized, legendWin, legendLoss, openTradesBadge, formatRfn, formatCashFn, formatChartDateFn, t,
+}: {
+  chartData: any[]; rMode: boolean; floatingR: number; locale: string; cur: string; intlLocale: string; openCount: number;
+  yKeyRealized: string; yKeyTotal: string; winKey: string; lossKey: string;
+  legendRealized: string; legendUnrealized: string; legendWin: string; legendLoss: string; openTradesBadge: string;
+  formatRfn: typeof formatR; formatCashFn: typeof formatCash; formatChartDateFn: typeof formatChartDate; t: any;
+}) {
+  return (
+    <>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={chartData} margin={{left:4,right:12,top:8,bottom:4}}>
+          <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" opacity={0.3}/>
+          <XAxis dataKey="date" tick={{fill:"#64748b", fontSize:10}} tickFormatter={(v:string)=> formatChartDateFn(v, locale)} axisLine={false} tickLine={false} minTickGap={24}/>
+          <YAxis tick={{fill:"#64748b", fontSize:10}} axisLine={false} tickLine={false} width={56} tickFormatter={(v:number)=> rMode? `${v.toFixed(1)}R` : `${v.toFixed(0)}`}/>
+          <Tooltip
+            contentStyle={{background:"#020617", border:"1px solid #1e293b", borderRadius:8, fontSize:11}}
+            labelFormatter={(l:string)=> formatChartDateFn(l, locale) + " • " + new Date(l).toLocaleTimeString(locale==="tr"?"tr-TR":locale==="de"?"de-DE":"en-US",{hour:"2-digit",minute:"2-digit"})}
+            formatter={(value:any, name:any)=>{
+              if(name===yKeyRealized) return [rMode? formatRfn(value as number) : formatCashFn(value as number,cur,intlLocale), legendRealized]
+              if(name===yKeyTotal) return [rMode? formatRfn(value as number) : formatCashFn(value as number,cur,intlLocale), legendUnrealized]
+              if(name===winKey) return [rMode? formatRfn(value as number) : formatCashFn(value as number,cur,intlLocale), "● WIN"]
+              if(name===lossKey) return [rMode? formatRfn(value as number) : formatCashFn(value as number,cur,intlLocale), "● LOSS"]
+              return [String(value), name]
+            }}
+          />
+          <Area type="monotone" dataKey={yKeyRealized} stroke="#00ff88" fill="#00ff88" fillOpacity={0.14} strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey={yKeyTotal} stroke={floatingR>=0?"#38bdf8":"#f59e0b"} strokeWidth={2} dot={false} strokeDasharray="6 4" />
+          <Scatter dataKey={winKey} fill="#22c55e" />
+          <Scatter dataKey={lossKey} fill="#ef4444" />
+        </ComposedChart>
+      </ResponsiveContainer>
+      <div className="flex items-center gap-3 mt-1 text-[10px] mono">
+        <span className="flex items-center gap-1.5"><span className="w-3 h-1.5 rounded-full bg-[#00ff88] inline-block"/><span className="text-[#94a3b8]">{legendRealized}</span></span>
+        <span className="flex items-center gap-1.5"><span className={`w-3 h-[2px] inline-block ${floatingR>=0?"bg-[#38bdf8]":"bg-[#f59e0b]"}`} style={{borderTop:"2px dashed currentColor"}}/><span className="text-[#94a3b8]">{legendUnrealized}</span></span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#22c55e] inline-block"/><span className="text-[#94a3b8]">{legendWin}</span></span>
+        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#ef4444] inline-block"/><span className="text-[#94a3b8]">{legendLoss}</span></span>
+        {openCount>0 && <span className="ml-auto bg-[#38bdf8]/10 border border-[#38bdf8]/30 text-[#38bdf8] px-2 py-0.5 rounded-full">{openTradesBadge}</span>}
+      </div>
+    </>
+  )
+})
 
 export default function DashboardPage() {
   const t = useTranslations("Dashboard")
@@ -181,14 +226,15 @@ export default function DashboardPage() {
   const floatingCash = computed.floatingCash
   const openCount = computed.openCount
 
-  // favorites strip
-  const favs = typeof window!=="undefined" ? getFavorites().slice(0,6) : []
-  const favPrices = favs.map(sym => ({ sym, price: liveMap[sym]?.price }))
+  // favorites strip — memoize to avoid re-render churn on liveMap
+  const favs = useMemo(() => (typeof window!=="undefined" ? getFavorites().slice(0,6) : []), [])
+  const favPrices = useMemo(() => favs.map(sym => ({ sym, price: liveMap[sym]?.price })), [favs, liveMap])
 
-  const yKeyRealized = rMode ? "equity_r_realized" : "equity_cash_realized"
-  const yKeyTotal = rMode ? "equity_r_total" : "equity_cash_total"
-  const winKey = rMode ? "winMarker" : "winMarkerCash"
-  const lossKey = rMode ? "lossMarker" : "lossMarkerCash"
+  const yKeyRealized = useMemo(() => rMode ? "equity_r_realized" : "equity_cash_realized", [rMode])
+  const yKeyTotal = useMemo(() => rMode ? "equity_r_total" : "equity_cash_total", [rMode])
+  const winKey = useMemo(() => rMode ? "winMarker" : "winMarkerCash", [rMode])
+  const lossKey = useMemo(() => rMode ? "lossMarker" : "lossMarkerCash", [rMode])
+  const handleToggleRMode = useCallback(() => setRMode((v:boolean)=>!v), [])
 
   return (
     <div className="space-y-4">
@@ -200,7 +246,7 @@ export default function DashboardPage() {
               {rMode? formatR(floatingR) : formatCash(floatingCash, cur, intlLocale)} {t("openImpact", {count: openCount})}
             </span>
           )}
-          <button onClick={()=>setRMode(v=>!v)} className="text-xs bg-[#1e293b] border border-[#334155] px-3 py-1.5 rounded-full">{rMode ? t("modeR") : t("modeCash")}</button>
+          <button onClick={handleToggleRMode} className="text-xs bg-[#1e293b] border border-[#334155] px-3 py-1.5 rounded-full">{rMode ? t("modeR") : t("modeCash")}</button>
         </div>
       </div>
 
@@ -227,41 +273,28 @@ export default function DashboardPage() {
 
       <div className="grid md:grid-cols-3 gap-3">
         <Card className="md:col-span-2"><CardHeader className="flex-row items-center justify-between"><CardTitle>{t("sections.equityCurve", {mode: rMode?"R":cur})}</CardTitle><span className="text-[10px] text-[#64748b]">{t("sections.equityHint")}</span></CardHeader><CardContent className="h-[340px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={chartData} margin={{left:4,right:12,top:8,bottom:4}}>
-              <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" opacity={0.3}/>
-              <XAxis dataKey="date" tick={{fill:"#64748b", fontSize:10}} tickFormatter={(v:string)=> formatChartDate(v, locale)} axisLine={false} tickLine={false} minTickGap={24}/>
-              <YAxis tick={{fill:"#64748b", fontSize:10}} axisLine={false} tickLine={false} width={56} tickFormatter={(v:number)=> rMode? `${v.toFixed(1)}R` : `${v.toFixed(0)}`}/>
-              <Tooltip
-                contentStyle={{background:"#020617", border:"1px solid #1e293b", borderRadius:8, fontSize:11}}
-                labelFormatter={(l:string)=> formatChartDate(l, locale) + " • " + new Date(l).toLocaleTimeString(locale==="tr"?"tr-TR":locale==="de"?"de-DE":"en-US",{hour:"2-digit",minute:"2-digit"})}
-                formatter={(value:any, name:any, props:any)=>{
-                  const p = props.payload
-                  if(name===yKeyRealized) return [rMode? formatR(value) : formatCash(value,cur,intlLocale), t("legendRealized")]
-                  if(name===yKeyTotal) return [rMode? formatR(value) : formatCash(value,cur,intlLocale), t("legendUnrealized")]
-                  if(name===winKey) return [rMode? formatR(value) : formatCash(value,cur,intlLocale), "● WIN"]
-                  if(name===lossKey) return [rMode? formatR(value) : formatCash(value,cur,intlLocale), "● LOSS"]
-                  return [String(value), name]
-                }}
-              />
-              {/* Realized equity filled area */}
-              <Area type="monotone" dataKey={yKeyRealized} stroke="#00ff88" fill="#00ff88" fillOpacity={0.14} strokeWidth={2} dot={false} />
-              {/* Unrealized / Total dashed line — only diverges at last point, but render full line dashed */}
-              <Line type="monotone" dataKey={yKeyTotal} stroke={floatingR>=0?"#38bdf8":"#f59e0b"} strokeWidth={2} dot={false} strokeDasharray="6 4" />
-              {/* Win markers green */}
-              <Scatter dataKey={winKey} fill="#22c55e" />
-              {/* Loss markers red */}
-              <Scatter dataKey={lossKey} fill="#ef4444" />
-            </ComposedChart>
-          </ResponsiveContainer>
-          {/* Legend */}
-          <div className="flex items-center gap-3 mt-1 text-[10px] mono">
-            <span className="flex items-center gap-1.5"><span className="w-3 h-1.5 rounded-full bg-[#00ff88] inline-block"/><span className="text-[#94a3b8]">{t("legendRealized")}</span></span>
-            <span className="flex items-center gap-1.5"><span className={`w-3 h-[2px] inline-block ${floatingR>=0?"bg-[#38bdf8]":"bg-[#f59e0b]"}`} style={{borderTop:"2px dashed currentColor"}}/><span className="text-[#94a3b8]">{t("legendUnrealized")}</span></span>
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#22c55e] inline-block"/><span className="text-[#94a3b8]">{t("legendWin")}</span></span>
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#ef4444] inline-block"/><span className="text-[#94a3b8]">{t("legendLoss")}</span></span>
-            {openCount>0 && <span className="ml-auto bg-[#38bdf8]/10 border border-[#38bdf8]/30 text-[#38bdf8] px-2 py-0.5 rounded-full">{t("openTradesBadge",{count: openCount, value: rMode? formatR(floatingR): formatCash(floatingCash,cur,intlLocale)})}</span>}
-          </div>
+          <EquityChart
+            chartData={chartData}
+            rMode={rMode}
+            floatingR={floatingR}
+            locale={locale}
+            cur={cur}
+            intlLocale={intlLocale}
+            openCount={openCount}
+            yKeyRealized={yKeyRealized}
+            yKeyTotal={yKeyTotal}
+            winKey={winKey}
+            lossKey={lossKey}
+            legendRealized={t("legendRealized")}
+            legendUnrealized={t("legendUnrealized")}
+            legendWin={t("legendWin")}
+            legendLoss={t("legendLoss")}
+            openTradesBadge={openCount>0 ? String(t("openTradesBadge",{count: openCount, value: rMode? formatR(floatingR): formatCash(floatingCash,cur,intlLocale)})) : ""}
+            formatRfn={formatR}
+            formatCashFn={formatCash}
+            formatChartDateFn={formatChartDate}
+            t={t}
+          />
         </CardContent></Card>
         <Card><CardHeader><CardTitle>{t("sections.breakdownEmotion")}</CardTitle></CardHeader><CardContent className="space-y-2">
           {Object.entries(data.breakdown.by_emotion || {}).slice(0,6).map(([k,v]:any)=>(
