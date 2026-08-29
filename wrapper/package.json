@@ -1,6 +1,6 @@
 {
   "name": "koc-matrix-wrapper",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Koç Matrix Ultra — Cross-platform menü çubuğu wrapper (Electron) — Docker + GHCR + auto-updater",
   "main": "main.js",
   "author": "Koç Matrix <alikula37@users.noreply.github.com>",
