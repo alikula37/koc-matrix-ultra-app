@@ -1,0 +1,138 @@
+name: Build & Release — Cross-Platform (.dmg/.zip/.exe)
+
+# Amaç: Teknik bilgisi olmayan son kullanıcı GitHub Releases'ten .dmg/.exe indirip çift tıkla kursun.
+# Tetik: yeni tag (v*.*.*) veya GitHub Release oluşturulduğunda + manuel dispatch.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  release:
+    types: [created, published]
+  workflow_dispatch:
+
+# GITHUB_TOKEN ile Release'e asset yüklemek için contents:write gerekli
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }} — ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            arch: universal
+            dist_cmd: "npm run dist:mac --prefix wrapper"
+          - os: windows-latest
+            arch: x64
+            dist_cmd: "npm run dist:win --prefix wrapper"
+          # İsteğe bağlı: Linux AppImage de eklenebilir
+          # - os: ubuntu-latest
+          #   arch: x64
+          #   dist_cmd: "npx --prefix wrapper electron-builder --linux"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            wrapper/package-lock.json
+            wrapper/package.json
+            package-lock.json
+
+      - name: Install dependencies (wrapper)
+        run: |
+          npm ci --prefix wrapper || npm install --prefix wrapper
+          # electron + electron-builder zaten wrapper/package.json'da tanımlı
+          # paket lock yoksa fallback install kullanır
+
+      - name: Show versions
+        run: |
+          node --version
+          npm --version
+          npx --prefix wrapper electron-builder --version || true
+          cat wrapper/package.json | grep -E '"version"|electron-builder|electron-updater' || true
+
+      - name: Build — ${{ matrix.os }} (${{ matrix.arch }})
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS notarize için opsiyonel — yoksa build sign'sız yapılır (spec'te opsiyonel)
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        run: ${{ matrix.dist_cmd }}
+
+      # Fallback: tam dist script'i ( --mac --win ) tek runner'da hatalı platformu skip eder;
+      # burada matrix'e göre tek platform build ettiğimiz için yukarıdaki adım yeterli.
+      # Ek doğrulama: dist klasöründe beklenen çıktılar var mı?
+      - name: List dist artifacts
+        run: |
+          ls -lh dist || true
+          echo "--- dist file types ---"
+          file dist/* || true
+          echo "--- expected ---"
+          echo "macOS: .dmg + .zip + latest-mac.yml (auto-updater)"
+          echo "Windows: .exe (nsis) + .zip + latest.yml"
+
+      # Her matrix job'u kendi artefaktını GitHub Actions artefakt deposuna da yükler (debug için)
+      - name: Upload workflow artifacts (retention 7d)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            dist/*.dmg
+            dist/*.zip
+            dist/*.exe
+            dist/*.yml
+            dist/*.blockmap
+          if-no-files-found: warn
+          retention-days: 7
+
+      # Release asset olarak yükle — tag ve release event'lerinde çalışır
+      # softprops/action-gh-release aynı Release'e birden fazla matrix job paralel yükleyebilir (append).
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.dmg
+            dist/*.zip
+            dist/*.exe
+            dist/*.yml
+            dist/*.blockmap
+          fail_on_unmatched_files: false
+          generate_release_notes: true
+          # Not: electron-updater için latest*.yml ve blockmap dosyaları da yüklenmeli — autoUpdater GitHub provider bunları kullanır
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Opsiyonel: Release yoksa ve tag push ise, build job'ları bitince Release'i otomatik oluştur
+  # (release-please zaten Release oluşturur — bu job sadece fallback)
+  release:
+    name: Create GitHub Release (if needed)
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - name: Ensure Release exists for tag
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: dist/* # build job'ları zaten yükledi, bu adım sadece Release notlarını garanti eder
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
