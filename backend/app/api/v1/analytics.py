@@ -20,12 +20,15 @@ async def summary(
     db: AsyncSession = Depends(get_db),
     current: User = Depends(get_current_user)
 ):
-    q = select(Trade).where(Trade.user_id==current.id, Trade.deleted_at.is_(None), Trade.status.in_(["CLOSED","PARTIAL"]))
+    q = select(Trade).where(Trade.user_id==current.id, Trade.deleted_at.is_(None), Trade.status.in_(["CLOSED","PARTIAL","OPEN","CANCELLED"]))
+    # note: basic metrics & most breakdowns use CLOSED/PARTIAL only; OPEN/CANCELLED kept for floating + direction stats
     if account_id: q = q.where(Trade.account_id==account_id)
     if date_from: q = q.where(Trade.entry_date>=date_from)
     if date_to: q = q.where(Trade.entry_date<=date_to)
     res = await db.execute(q)
     trades = res.scalars().all()
+    # closed dicts for metrics
+    closed_trades = [t for t in trades if t.status in ("CLOSED","PARTIAL")]
     # convert to dicts
     dicts = [
         {
@@ -34,13 +37,15 @@ async def summary(
             "planned_rr": t.planned_rr,
             "realized_rr": t.realized_rr,
             "symbol": t.symbol,
+            "direction": t.direction,
             "emotions": t.emotions,
             "indicators_used": t.indicators_used,
             "setups": t.setups,
             "entry_date": t.entry_date,
             "account_id": t.account_id,
+            "status": t.status,
         }
-        for t in trades
+        for t in closed_trades
     ]
     basic = compute_basic_metrics(dicts)
     # breakdowns
@@ -70,17 +75,34 @@ async def summary(
             d["hour_bucket"] = "00:00"
     weekday_bd = breakdown_by(dicts, "weekday")
     hour_bd = breakdown_by(dicts, "hour_bucket")
+    # symbol & direction breakdowns
+    symbol_bd = breakdown_by(dicts, "symbol")
+    direction_bd = breakdown_by(dicts, "direction")
 
-    # equity curve (sorted by entry_date)
+    # equity curve (sorted by entry_date) — CLOSED/PARTIAL only
     dicts_sorted = sorted([d for d in dicts if d["entry_date"]], key=lambda x: x["entry_date"])
     equity_r = []
     cum = 0
     for d in dicts_sorted:
         cum += d["net_pnl_r"] or 0
-        equity_r.append({"date": d["entry_date"].isoformat(), "equity_r": round(cum,3), "cash": d["net_pnl_cash"]})
+        equity_r.append({
+            "date": d["entry_date"].isoformat(),
+            "equity_r": round(cum,3),
+            "cash": d["net_pnl_cash"],
+            "symbol": d.get("symbol"),
+            "win": (d.get("net_pnl_r") or 0) > 0,
+            "pnl_r": d.get("net_pnl_r") or 0,
+        })
 
     payoff = (basic["avg_win_r"]/basic["avg_loss_r"]) if basic["avg_loss_r"] else 0
     ror = risk_of_ruin(basic["win_rate"]/100 if basic["win_rate"] else 0, payoff)
+
+    # OPEN trades — for Unrealized / Floating equity second line (frontend computes live PnL, backend gives count)
+    open_trades = [t for t in trades if t.status == "OPEN"]
+    open_summary = {
+        "count": len(open_trades),
+        "symbols": list({t.symbol for t in open_trades}),
+    }
 
     return {
         "basic": basic,
@@ -92,8 +114,11 @@ async def summary(
             "by_account": account_bd,
             "by_weekday": weekday_bd,
             "by_hour": hour_bd,
+            "by_symbol": symbol_bd,
+            "by_direction": direction_bd,
         },
         "equity_curve": equity_r,
+        "open_trades": open_summary,
     }
 
 @router.get("/heatmap")
@@ -104,7 +129,7 @@ async def heatmap(
 ):
     from zoneinfo import ZoneInfo
     IST = ZoneInfo("Europe/Istanbul")
-    q = select(Trade).where(Trade.user_id==current.id, Trade.deleted_at.is_(None))
+    q = select(Trade).where(Trade.user_id==current.id, Trade.deleted_at.is_(None), Trade.status.in_(["CLOSED","PARTIAL"]))
     res = await db.execute(q)
     trades = res.scalars().all()
     from collections import defaultdict
@@ -122,7 +147,9 @@ async def heatmap(
     for d, lst in by_date.items():
         total_r = sum(x.net_pnl_r or 0 for x in lst)
         total_cash = sum(x.net_pnl_cash or 0 for x in lst)
-        out.append({"date": d, "total_r": round(total_r,2), "total_cash": round(total_cash,2), "count": len(lst)})
+        wins = sum(1 for x in lst if (x.net_pnl_r or 0) > 0)
+        win_rate = round(wins / len(lst) * 100, 1) if lst else 0
+        out.append({"date": d, "total_r": round(total_r,2), "total_cash": round(total_cash,2), "count": len(lst), "win_rate": win_rate, "avg_r": round(total_r/len(lst),3) if lst else 0})
     return sorted(out, key=lambda x: x["date"])
 
 @router.get("/period-summary")

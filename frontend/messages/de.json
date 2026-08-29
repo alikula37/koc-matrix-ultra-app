@@ -78,13 +78,25 @@
       "breakdownSetup": "NACH SETUP",
       "breakdownHour": "STÜNDLICHE AUFSCHLÜSSELUNG (IST)",
       "breakdownAccount": "NACH KONTO",
-      "accountLabel": "Konto #{id}"
+      "accountLabel": "Konto #{id}",
+      "equityHint": "Grün = realisiert • gestrichelt = offenes Floating"
     },
     "chart": {
       "winRateUnit": "%",
       "tradesUnit": "Trades",
       "rExp": "R Erw."
-    }
+    },
+    "openImpact": "{count} offen → floating",
+    "favoritesStrip": "FAVORITEN ★ LIVE",
+    "liveHint": "Live-Preis alle 5s via Binance/Yahoo",
+    "liveError": "No live data",
+    "legendRealized": "Realisiert",
+    "legendUnrealized": "Unrealisiert",
+    "legendWin": "Gewinn",
+    "legendLoss": "Verlust",
+    "openTradesBadge": "{count} offen → {value} floating",
+    "openTradesTitle": "{count} Offene Trades",
+    "openImpactValue": "Floating: {value}"
   },
   "Trades": {
     "title": "Trades",
@@ -120,11 +132,38 @@
       "rr": "Geplantes RR {plan} • Tatsächlich {real}",
       "history": "Verlauf",
       "exits": "Ausstiege: {exits}",
-      "softDeleted": "Soft gelöscht"
+      "softDeleted": "Soft gelöscht",
+      "cancelled": "STORNIERT",
+      "noLive": "warte Live…"
     },
     "detail": {
       "editHistory": "Bearbeitungsverlauf — Was war die erste Notiz?",
       "noHistory": "Kein Verlauf"
+    },
+    "favorites": {
+      "title": "★ FAVORITEN",
+      "hint": "Klick → Symbol füllen, Live-Preis auto",
+      "empty": "Keine Favoriten",
+      "placeholder": "BTCUSDT / THYAO / AAPL",
+      "add": "Hinzufügen"
+    },
+    "live": {
+      "fetching": "lade…",
+      "noData": "kein Live-Preis",
+      "fill": "→ Füllen"
+    },
+    "actions": {
+      "close": "Schließen",
+      "cancel": "Stornieren",
+      "closeTitle": "{symbol} — Trade Schließen",
+      "closeDesc": "Dieser Trade wird GESCHLOSSEN. Preis bestätigen.",
+      "closePrice": "Schließpreis (Live-Preis vorgeschlagen)",
+      "liveHint": "Aktueller Marktpreis vorausgefüllt.",
+      "confirmClose": "Schließen bestätigen",
+      "cancelTitle": "{symbol} — Stornieren",
+      "cancelDesc": "Fehlerhafter Trade wird storniert, PnL genullt.",
+      "cancelWarning": "Hinweis: Geschlossene Trades können nicht storniert werden.",
+      "confirmCancel": "Stornieren bestätigen"
     }
   },
   "Calendar": {
@@ -142,6 +181,20 @@
       "friday": "Fr",
       "saturday": "Sa",
       "sunday": "So"
+    },
+    "heatmapHint": "Dunkel = hoher PnL",
+    "legend": {
+      "profit": "Gewinn",
+      "loss": "Verlust",
+      "intensity": "Intensität @ max {max}"
+    },
+    "tooltip": {
+      "winRate": "WR %{value}",
+      "clickForDetails": "Klick → Details"
+    },
+    "metrics": {
+      "r": "R",
+      "cash": "{cur}"
     }
   },
   "Analytics": {
@@ -151,7 +204,15 @@
     "summary": "Diesen Monat: {r}R / {cash}€ • Bestes Setup: {setup}",
     "sections": {
       "expectancyPayoff": "ERWARTUNGSWERT & PAYOFF",
-      "timeBreakdown": "ZEIT-AUFSCHLÜSSELUNG — Tag / Stunde (IST)"
+      "timeBreakdown": "ZEIT-AUFSCHLÜSSELUNG — Tag / Stunde (IST)",
+      "bySymbol": "NACH SYMBOL",
+      "bySymbolHint": "Profitabelstes Symbol",
+      "longShort": "LONG vs SHORT",
+      "bySetup": "NACH SETUP",
+      "bySetupHint": "Nach Expectancy sortiert",
+      "byEmotion": "NACH EMOTION",
+      "byIndicator": "NACH INDIKATOR",
+      "dayHint": "Ist Montag am besten?"
     },
     "metrics": {
       "expectancy": "Erwartungswert",

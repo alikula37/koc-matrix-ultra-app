@@ -114,6 +114,93 @@ async def update_trade(trade_id: int, data: TradeCreate, db: AsyncSession = Depe
     await manager.broadcast({"event": "trade_updated", "trade_id": trade.id})
     return trade
 
+@router.post("/{trade_id}/close")
+async def close_trade(trade_id: int, payload: dict | None = None, db: AsyncSession = Depends(get_db), current: User = Depends(get_current_user)):
+    """Açık işlemi canlı/elin fiyatla kapat — Trades sayfası 'İşlem Kapat' butonu."""
+    res = await db.execute(select(Trade).where(Trade.id==trade_id, Trade.user_id==current.id, Trade.deleted_at.is_(None)).options(selectinload(Trade.exits)))
+    trade = res.scalar_one_or_none()
+    if not trade: raise HTTPException(404, "Trade yok")
+    if trade.status not in ("OPEN","PARTIAL"):
+        raise HTTPException(400, "Sadece OPEN/PARTIAL işlem kapatılabilir")
+    body = payload or {}
+    exit_price = body.get("exit_price") or body.get("price")
+    if exit_price is None:
+        # fallback: entry_price (breakeven) — caller should send live market price
+        exit_price = trade.entry_price
+    try:
+        exit_price = float(exit_price)
+    except:
+        raise HTTPException(400, "Geçersiz exit_price")
+    exit_quantity = body.get("exit_quantity")
+    if exit_quantity is None:
+        # kalan miktar
+        res2 = await db.execute(select(TradeExit).where(TradeExit.trade_id==trade_id))
+        exits = res2.scalars().all()
+        filled = sum(e.exit_quantity for e in exits)
+        exit_quantity = max(0, trade.position_size - filled)
+        if exit_quantity == 0:
+            exit_quantity = trade.position_size
+    else:
+        exit_quantity = float(exit_quantity)
+    exit_reason = body.get("exit_reason") or "Manual"
+    exit_time_str = body.get("exit_time")
+    if exit_time_str:
+        try:
+            exit_time = datetime.fromisoformat(str(exit_time_str).replace("Z","+00:00"))
+        except:
+            exit_time = datetime.utcnow()
+    else:
+        exit_time = datetime.utcnow()
+    # reuse exit creation logic
+    pnl_cash = (exit_price - trade.entry_price) * exit_quantity if trade.direction=="LONG" else (trade.entry_price - exit_price) * exit_quantity
+    # commission proportional share
+    pnl_cash -= (trade.commission_fees * (exit_quantity / trade.position_size)) if trade.commission_fees else 0
+    risk_per_unit = abs(trade.entry_price - trade.stop_loss) if trade.stop_loss else trade.entry_price * 0.02
+    pnl_r = pnl_cash / (risk_per_unit * trade.position_size) if risk_per_unit else 0
+    exit_row = TradeExit(trade_id=trade_id, exit_price=exit_price, exit_quantity=exit_quantity, exit_time=exit_time, exit_reason=exit_reason, pnl_cash=round(pnl_cash,2), pnl_r=round(pnl_r,3))
+    db.add(exit_row)
+    await db.flush()
+    res2 = await db.execute(select(TradeExit).where(TradeExit.trade_id==trade_id))
+    exits = res2.scalars().all()
+    total_cash = sum(e.pnl_cash or 0 for e in exits)
+    total_r = sum(e.pnl_r or 0 for e in exits)
+    total_qty = sum(e.exit_quantity for e in exits)
+    if total_qty >= trade.position_size - 1e-9:
+        trade.status = "CLOSED"
+        trade.exit_date = exit_time
+    else:
+        trade.status = "PARTIAL"
+    trade.net_pnl_cash = round(total_cash,2)
+    trade.net_pnl_r = round(total_r,3)
+    trade.realized_rr = round(total_r,2)
+    await db.commit()
+    await manager.broadcast({"event": "trade_closed", "trade_id": trade_id})
+    res3 = await db.execute(select(Trade).where(Trade.id==trade_id).options(selectinload(Trade.exits)))
+    return res3.scalar_one()
+
+@router.post("/{trade_id}/cancel")
+async def cancel_trade(trade_id: int, db: AsyncSession = Depends(get_db), current: User = Depends(get_current_user)):
+    """Açık / hatalı işlemi iptal et — statü CANCELLED, PnL sıfırla. 'İşlem İptal Et' butonu."""
+    res = await db.execute(select(Trade).where(Trade.id==trade_id, Trade.user_id==current.id, Trade.deleted_at.is_(None)).options(selectinload(Trade.exits)))
+    trade = res.scalar_one_or_none()
+    if not trade: raise HTTPException(404, "Trade yok")
+    if trade.status == "CANCELLED":
+        raise HTTPException(400, "İşlem zaten iptal edilmiş")
+    if trade.status == "CLOSED":
+        raise HTTPException(400, "Kapalı işlem iptal edilemez — önce soft delete kullanın")
+    trade.status = "CANCELLED"
+    trade.net_pnl_cash = 0
+    trade.net_pnl_r = 0
+    trade.realized_rr = 0
+    # create history for audit
+    from app.models.trade_edit_history import TradeEditHistory
+    hist = TradeEditHistory(trade_id=trade.id, edited_by=current.id, old_data={"status": "OPEN"}, new_data={"status": "CANCELLED"}, diff={"status": {"old":"OPEN","new":"CANCELLED"}})
+    db.add(hist)
+    await db.commit()
+    await manager.broadcast({"event": "trade_cancelled", "trade_id": trade_id})
+    res2 = await db.execute(select(Trade).where(Trade.id==trade_id).options(selectinload(Trade.exits)))
+    return res2.scalar_one()
+
 @router.delete("/{trade_id}")
 async def delete_trade(trade_id: int, db: AsyncSession = Depends(get_db), current: User = Depends(get_current_user)):
     res = await db.execute(select(Trade).where(Trade.id==trade_id, Trade.user_id==current.id, Trade.deleted_at.is_(None)))
