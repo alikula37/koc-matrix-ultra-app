@@ -1,4 +1,5 @@
 "use client"
+// cache-bust: 2026-08-29 dashboard fix for 8001 + defensive
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,15 +12,27 @@ export default function DashboardPage() {
   const [rMode, setRMode] = useState(true)
 
   useEffect(() => {
-    api.analytics().then(setData).catch(e=>setErr(String(e).slice(0,400)))
+    const tok = typeof window!=="undefined" ? localStorage.getItem("access_token") : null
+    const enc = typeof window!=="undefined" ? localStorage.getItem("enc_token") : null
+    if(!tok && !enc) { setErr("Oturum yok — /login ile giriş yapın"); return }
+    api.analytics().then(d=>{
+      // guard: backend returns {basic, breakdown, equity_curve} ; if not, show error
+      if(!d || !d.basic) throw new Error("Geçersiz analytics verisi")
+      setData(d)
+    }).catch(e=>{
+      const msg = String(e)
+      if(msg.includes("401")) setErr("Oturum süresi doldu — tekrar giriş yapın")
+      else setErr(msg.slice(0,500))
+    })
     // WS realtime
-    const wsProto = (process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000")
+    const wsProto = (process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8001")
     try {
       const ws = new WebSocket(`${wsProto}/ws/trades`)
       ws.onmessage = (ev) => {
         try { const msg = JSON.parse(ev.data); if(msg.event?.startsWith("trade")) api.analytics().then(setData).catch(()=>{}) } catch {}
       }
-      return () => ws.close()
+      ws.onerror = ()=>{}
+      return () => { try{ ws.close()} catch{} }
     } catch {}
   }, [])
 
