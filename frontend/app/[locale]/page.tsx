@@ -28,11 +28,12 @@ export default function Home() {
         <p className="text-[#00ff88] font-mono text-sm tracking-widest">{tBrand("subtitle")}</p>
         <p className="mt-4 text-[#94a3b8] max-w-2xl mx-auto">{t("description")}</p>
       </div>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { title: t("cards.dashboardTitle"), desc: t("cards.dashboardDesc"), href: "/dashboard", color: "from-[#00ff88]/20 to-[#00e5ff]/20 border-[#00ff88]/30" },
           { title: t("cards.tradesTitle"), desc: t("cards.tradesDesc"), href: "/trades", color: "from-[#ffaa00]/15 to-[#ff3366]/15 border-[#ffaa00]/30" },
           { title: t("cards.calendarTitle"), desc: t("cards.calendarDesc"), href: "/calendar", color: "from-[#00e5ff]/15 to-[#7c3aed]/15 border-[#00e5ff]/30" },
+          { title: t("cards.analyticsTitle"), desc: t("cards.analyticsDesc"), href: "/analytics", color: "from-[#7c3aed]/15 to-[#00ff88]/15 border-[#7c3aed]/30" },
         ].map(c=>(
           <Link key={c.href} href={c.href} className={`bg-gradient-to-br ${c.color} border rounded-2xl p-6 hover:scale-[1.02] transition`}>
             <h3 className="font-bold text-white">{c.title}</h3>

@@ -37,7 +37,9 @@
       "tradesTitle": "Trades",
       "tradesDesc": "CRUD + partial exits (TP1/TP2/TP3) + edit history",
       "calendarTitle": "Calendar",
-      "calendarDesc": "Daily Net R heatmap, R/$ toggle, month-end summary"
+      "calendarDesc": "Daily Net R heatmap, R/$ toggle, month-end summary",
+      "analyticsTitle": "Analytics",
+      "analyticsDesc": "Expectancy & Payoff, Time Breakdown"
     },
     "quickStart": "QUICK START (ZERO TERMINAL)",
     "quickStartSteps": {

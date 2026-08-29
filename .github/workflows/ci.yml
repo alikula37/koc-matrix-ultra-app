@@ -50,6 +50,14 @@ jobs:
       - run: npm run build
         working-directory: frontend
 
+  i18n-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node scripts/check-i18n.cjs
+
   docker-compose-health:
     runs-on: ubuntu-latest
     steps:
