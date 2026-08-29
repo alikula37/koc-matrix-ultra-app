@@ -10,6 +10,10 @@ export default function CalendarPage() {
   const [selected, setSelected] = useState<any>(null)
 
   useEffect(()=>{ api.calendar(year).then(setData).catch(()=>setData([])) }, [year])
+  const exportPdf = async ()=>{
+    const { exportCalendarPdf } = await import("@/lib/pdf")
+    await exportCalendarPdf(year, mode, data)
+  }
 
   const byDate: Record<string, any> = Object.fromEntries(data.map(d=>[d.date,d]))
   const daysInMonth = (m:number,y:number)=> new Date(y,m+1,0).getDate()
@@ -21,6 +25,7 @@ export default function CalendarPage() {
         <h1 className="text-lg font-bold">Takvim Heatmap</h1>
         <div className="flex items-center gap-2">
           <button onClick={()=>setMode(mode==="R"?"cash":"R")} className="text-xs bg-[#1e293b] border border-[#334155] px-3 py-1.5 rounded-full">{mode==="R" ? "R Modu" : "₺ Modu"}</button>
+          <button onClick={exportPdf} className="text-xs bg-[#00ff88] text-black font-bold px-3 py-1.5 rounded-full hover:bg-[#00e5ff]">📄 PDF İndir</button>
           <select value={year} onChange={e=>setYear(Number(e.target.value))} className="bg-[#0f172a] border border-[#1e293b] text-xs rounded-lg px-2 py-1.5">
             {[2024,2025,2026].map(y=><option key={y} value={y}>{y}</option>)}
           </select>

@@ -46,7 +46,7 @@ export default function DashboardPage() {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data.equity_curve}>
               <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" opacity={0.3}/>
-              <XAxis dataKey="date" tick={{fill:"#64748b", fontSize:10}} tickFormatter={(v)=>v.slice(5,10)} axisLine={false} tickLine={false}/>
+              <XAxis dataKey="date" tick={{fill:"#64748b", fontSize:10}} tickFormatter={(v:string)=>v.slice(5,10)} axisLine={false} tickLine={false}/>
               <YAxis tick={{fill:"#64748b", fontSize:10}} axisLine={false} tickLine={false} width={50}/>
               <Tooltip contentStyle={{background:"#020617", border:"1px solid #1e293b", borderRadius:8, fontSize:11}}/>
               <Area type="monotone" dataKey="equity_r" stroke="#00ff88" fill="#00ff88" fillOpacity={0.15} strokeWidth={2}/>

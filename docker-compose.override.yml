@@ -11,15 +11,16 @@ services:
     volumes:
       - ./backend:/app
 
-  frontend:
-    command: npm run dev
-    environment:
-      NODE_ENV: development
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-
-  db:
-    ports:
-      - "5432:5432"
+  # frontend dev override disabled for live — use production runner (node server.js)
+  # To enable hot-reload, add dev stage to Dockerfile and uncomment below:
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     target: dev
+  #   command: npm run dev
+  #   environment:
+  #     NODE_ENV: development
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #     - /app/.next

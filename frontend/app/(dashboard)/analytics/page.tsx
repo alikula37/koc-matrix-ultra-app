@@ -12,13 +12,17 @@ export default function AnalyticsPage() {
     fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/analytics/period-summary?period=monthly`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setPeriod).catch(()=>{})
   },[])
   if(!data) return <div className="py-10 text-center text-[#64748b]">Yükleniyor…</div>
-  const exportPdf = () => window.print()
+  const exportPdf = async () => {
+    const { exportAnalyticsPdf } = await import("@/lib/pdf")
+    await exportAnalyticsPdf(data, period)
+  }
   return (
     <div className="space-y-4 print:bg-white">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-bold">Gelişmiş Analitik — R & ₺ Paralel</h1>
         <div className="flex gap-2">
-          <button onClick={exportPdf} className="text-xs bg-[#1e293b] border border-[#334155] px-3 py-1.5 rounded-full">PDF Export (print)</button>
+          <button onClick={exportPdf} className="text-xs bg-[#00ff88] text-black font-bold px-3 py-1.5 rounded-full hover:bg-[#00e5ff]">📄 PDF İndir (jsPDF)</button>
+          <button onClick={()=>window.print()} className="text-xs bg-[#1e293b] border border-[#334155] px-3 py-1.5 rounded-full">Print</button>
           {period && <span className="text-xs bg-[#00ff88]/10 border border-[#00ff88]/20 text-[#00ff88] px-3 py-1.5 rounded-full">Bu Ay: {period.basic?.total_r}R / {period.basic?.total_cash}₺ • En iyi setup: {period.best_setup||"-"}</span>}
         </div>
       </div>

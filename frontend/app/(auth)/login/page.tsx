@@ -16,7 +16,7 @@ export default function LoginPage(){
     e.preventDefault(); setErr(""); setLoading(true)
     try{
       const res = await api.login(email,password)
-      setToken(res.access_token, res.refresh_token, pin || undefined)
+      await setToken(res.access_token, res.refresh_token, pin || undefined)
       location.href="/dashboard"
     }catch(e:any){ setErr(String(e.message).slice(0,300)) } finally{ setLoading(false) }
   }
