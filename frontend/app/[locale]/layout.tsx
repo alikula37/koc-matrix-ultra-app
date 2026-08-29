@@ -5,12 +5,23 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Koç Matrix Ultra — Trading Journal",
-  description: "Production-grade Trading Journal & Execution Analytics Engine",
-  manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Koç Matrix" },
-};
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+  return {
+    title: "Koç Matrix Ultra — Trading Journal",
+    description: "Production-grade Trading Journal & Execution Analytics Engine",
+    manifest: "/manifest.json",
+    appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Koç Matrix" },
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        tr: "/tr",
+        en: "/en",
+        de: "/de",
+        "x-default": "/tr",
+      },
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#020617",

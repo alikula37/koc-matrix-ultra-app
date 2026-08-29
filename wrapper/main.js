@@ -40,13 +40,21 @@ async function isHealthy() {
   } catch { return false }
 }
 
+function frontendUrl(path='/tr') {
+  const port = process.env.FRONTEND_PORT || '3001';
+  return `http://localhost:${port}${path}`;
+}
+function backendDocsUrl() {
+  const port = process.env.BACKEND_PORT || '8001';
+  return `http://localhost:${port}/docs`;
+}
 function buildMenu() {
   const label = status==='running' ? '● Journal Çalışıyor' : status==='starting' ? '○ Başlatılıyor...' : '✕ Hata — Yardım Al'
   return Menu.buildFromTemplate([
     { label, enabled: false },
     { type: 'separator' },
-    { label: 'Uygulamayı Aç', click: () => shell.openExternal('http://localhost:3000') },
-    { label: 'API Docs', click: () => shell.openExternal('http://localhost:8000/docs') },
+    { label: 'Uygulamayı Aç', click: () => shell.openExternal(frontendUrl('/tr/dashboard')) },
+    { label: 'API Docs', click: () => shell.openExternal(backendDocsUrl()) },
     { label: 'Güncellemeleri Kontrol Et', click: async () => {
         try { await pullImages(); await up(); new Notification({title:'Koç Matrix', body:'Güncelleme kontrol edildi'}).show() } catch(e){ dialog.showErrorBox('Güncelleme Hatası', String(e.err || e)) }
       }},

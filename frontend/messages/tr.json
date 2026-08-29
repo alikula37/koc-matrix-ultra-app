@@ -37,7 +37,9 @@
       "tradesTitle": "İşlemler",
       "tradesDesc": "CRUD + kısmi çıkış (TP1/TP2/TP3) + düzenleme geçmişi",
       "calendarTitle": "Takvim",
-      "calendarDesc": "Günlük Net R ısı haritası, R/₺ geçişi, ay kapanış özeti"
+      "calendarDesc": "Günlük Net R ısı haritası, R/₺ geçişi, ay kapanış özeti",
+      "analyticsTitle": "Analitik",
+      "analyticsDesc": "Beklenti & Payoff, Zaman Dağılımı"
     },
     "quickStart": "HIZLI BAŞLANGIÇ (SIFIR TERMİNAL)",
     "quickStartSteps": {
