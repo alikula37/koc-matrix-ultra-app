@@ -6,6 +6,9 @@ on:
   push:
     tags:
       - "v*.*.*"
+      - "*-v*.*.*"
+      - "wrapper-v*.*.*"
+      - "koc-matrix-ultra-app-v*.*.*"
   release:
     types: [created, published]
   workflow_dispatch:
