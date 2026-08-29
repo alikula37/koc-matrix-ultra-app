@@ -8,10 +8,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3001',
     trace: 'on-first-retry',
   },
-  webServer: [
+  webServer: process.env.CI ? undefined : [
     { command: 'npm run dev', port: 3000, reuseExistingServer: !process.env.CI, cwd: '.' },
   ],
   projects: [
