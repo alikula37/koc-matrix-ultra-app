@@ -1,0 +1,252 @@
+{
+  "Brand": {
+    "name": "KOÇ MATRIX ULTRA",
+    "subtitle": "TRADING JOURNAL & EXECUTION ANALYTICS ENGINE"
+  },
+  "Common": {
+    "loading": "Yükleniyor…",
+    "error": "Hata",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "close": "Kapat",
+    "open": "Aç →",
+    "connectionError": "Bağlantı hatası: {error} — docker compose up ile backend'i ayağa kaldırın.",
+    "noData": "Veri yok — işlem ekle",
+    "total": "Toplam: {value}",
+    "apiStatusOk": "Çalışıyor",
+    "apiStatusError": "Bağlantı yok (docker compose up?)",
+    "apiStatusChecking": "Kontrol..."
+  },
+  "Nav": {
+    "dashboard": "Dashboard",
+    "trades": "İşlemler",
+    "calendar": "Takvim",
+    "analytics": "Analitik",
+    "settings": "Ayarlar",
+    "live": "CANLI — WS",
+    "newTrade": "+ Yeni İşlem",
+    "logout": "Çıkış",
+    "menu": "Menü"
+  },
+  "Home": {
+    "apiLabel": "API",
+    "description": "Production-grade, veri kaybı riski sıfır, PWA + realtime. iPhone/Android/Mac'te aynı anda açık, bir cihazdan işlem ekle — diğerinde anında görünür.",
+    "cards": {
+      "dashboardTitle": "Dashboard",
+      "dashboardDesc": "Equity eğrisi, Kazanma Oranı, Kâr Faktörü, Beklenti, Sharpe",
+      "tradesTitle": "İşlemler",
+      "tradesDesc": "CRUD + kısmi çıkış (TP1/TP2/TP3) + düzenleme geçmişi",
+      "calendarTitle": "Takvim",
+      "calendarDesc": "Günlük Net R ısı haritası, R/₺ geçişi, ay kapanış özeti"
+    },
+    "quickStart": "HIZLI BAŞLANGIÇ (SIFIR TERMİNAL)",
+    "quickStartSteps": {
+      "1": "GitHub Releases → KoçMatrixUltra.dmg indir",
+      "2": "Sürükle-bırak kur → Uygulamayı aç",
+      "3": "Menü çubuğunda ● Journal Çalışıyor → Uygulamayı Aç",
+      "4": "iPhone’da Tailscale ile aynı adresle bağlan"
+    },
+    "goDashboard": "Dashboard’a Git",
+    "apiDocs": "API Docs →"
+  },
+  "Dashboard": {
+    "title": "Dashboard — İşlem Analizi",
+    "subtitle": "İşlem Analizi",
+    "modeR": "R Modu",
+    "modeCash": "₺/$ Modu",
+    "modeCashAlt": "₺ Modu",
+    "sessionExpired": "Oturum süresi doldu — tekrar giriş yapın",
+    "sessionMissing": "Oturum yok — /login ile giriş yapın",
+    "invalidData": "Geçersiz analitik verisi",
+    "metrics": {
+      "winRate": "KAZANMA ORANI",
+      "winCount": "{win}K / {loss}M — {total} işlem",
+      "profitFactor": "KÂR FAKTÖRÜ",
+      "expectancy": "Beklenti",
+      "expectancyValue": "Beklenti {value}R",
+      "total": "TOPLAM",
+      "avgRR": "Ort. RR {value} — PF {pf}",
+      "sharpeSortino": "SHARPE / SORTINO",
+      "drawdownRor": "DD {drawdown} • RoR %{ror}",
+      "noEmotionData": "Veri yok — işlem ekle"
+    },
+    "sections": {
+      "equityCurve": "EQUITY EĞRİSİ ({mode})",
+      "breakdownEmotion": "DAĞILIM — DUYGU",
+      "breakdownSetup": "SETUP BAZLI",
+      "breakdownHour": "SAATLİK DAĞILIM (İST)",
+      "breakdownAccount": "HESAP BAZLI",
+      "accountLabel": "Hesap #{id}"
+    },
+    "chart": {
+      "winRateUnit": "%",
+      "tradesUnit": "işlem",
+      "rExp": "R beklenti"
+    }
+  },
+  "Trades": {
+    "title": "İşlemler",
+    "newTrade": "YENİ TRADE",
+    "newTradeButton": "+ Yeni İşlem",
+    "close": "Kapat",
+    "form": {
+      "symbol": "Sembol",
+      "direction": "Yön",
+      "long": "LONG",
+      "short": "SHORT",
+      "entryPrice": "Giriş Fiyatı",
+      "stopLoss": "Zarar Durdur",
+      "takeProfit": "Kar Al",
+      "positionSize": "Pozisyon Büyüklüğü",
+      "account": "Hesap",
+      "entryDate": "Giriş Tarihi",
+      "commission": "Komisyon",
+      "emotions": "Duygular",
+      "indicators": "İndikatörler",
+      "setups": "Setup’lar",
+      "chart": "Grafik (giriş/çıkış)",
+      "chartCount": "{count} görsel yüklendi",
+      "notes": "Not (Markdown)",
+      "notesPlaceholder": "Kurulum notu",
+      "save": "Kaydet — OpenAPI sabit sözleşme"
+    },
+    "list": {
+      "title": "AÇIK & KAPALI İŞLEMLER ({count})",
+      "empty": "Henüz işlem yok — seed için backend/tests/seed.py çalıştır veya yukarıdan ekle.",
+      "entryToSL": "Giriş {entry} → SL {sl} • TP1 {tp} • {no} • Komisyon {fee}",
+      "meta": "Duygu: {emotions} • Setup: {setups} • Skor {score}",
+      "rr": "Plan RR {plan} • Gerçek {real}",
+      "history": "Geçmiş",
+      "exits": "Çıkışlar: {exits}",
+      "softDeleted": "Soft silindi"
+    },
+    "detail": {
+      "editHistory": "Edit History — İlk not neydi?",
+      "noHistory": "Düzenleme yok"
+    }
+  },
+  "Calendar": {
+    "title": "Takvim Isı Haritası",
+    "modeR": "R Modu",
+    "modeCash": "₺ Modu",
+    "total": "Toplam: {r}R / {cash}₺",
+    "downloadPdf": "📄 PDF İndir",
+    "tradeCount": "{count} işlem",
+    "days": {
+      "monday": "Pzt",
+      "tuesday": "Sal",
+      "wednesday": "Çar",
+      "thursday": "Per",
+      "friday": "Cum",
+      "saturday": "Cmt",
+      "sunday": "Paz"
+    }
+  },
+  "Analytics": {
+    "title": "Gelişmiş Analitik — R & ₺ Paralel",
+    "downloadPdf": "📄 PDF İndir (jsPDF)",
+    "print": "Yazdır",
+    "summary": "Bu Ay: {r}R / {cash}₺ • En iyi setup: {setup}",
+    "sections": {
+      "expectancyPayoff": "BEKLENTİ & PAYOFF",
+      "timeBreakdown": "ZAMAN DAĞILIMI — Gün / Saat (İST)"
+    },
+    "metrics": {
+      "expectancy": "Beklenti",
+      "payoff": "Payoff"
+    },
+    "details": {
+      "profitFactor": "Kâr Faktörü: {value}",
+      "avgWinLoss": "Ort. Kazanç {win}R vs Ort. Kayıp {loss}R",
+      "rrDeviation": "RR Sapma: {value}",
+      "risk": "RİSK",
+      "sharpeSortino": "Sharpe {sharpe} • Sortino {sortino}",
+      "maxDD": "Maks. Düşüş {r}R / {cash}",
+      "riskOfRuin": "İflas Riski %{value}",
+      "streak": "Seri {wins}K / {losses}M",
+      "day": "Gün",
+      "hour": "Saat"
+    }
+  },
+  "Settings": {
+    "title": "Ayarlar — Hesaplar & Referans Tablolar",
+    "description": "Hardcoded enum değil — kullanıcı kendi setup/indikatör/duygu etiketini ekler.",
+    "sections": {
+      "accounts": "HESAPLAR",
+      "setups": "Setup’lar",
+      "indicators": "İndikatörler",
+      "emotions": "Duygular",
+      "webhookBackup": "WEBHOOK & YEDEK"
+    },
+    "form": {
+      "name": "İsim",
+      "add": "Ekle",
+      "delete": "Sil",
+      "noData": "Henüz veri yok",
+      "placeholder": "Yeni {name} ekle"
+    },
+    "accounts": {
+      "namePlaceholder": "Hesap adı",
+      "create": "Hesap Oluştur"
+    }
+  },
+  "Auth": {
+    "login": {
+      "title": "Giriş Yap",
+      "subtitle": "JWT + PIN encrypt — tek kullanıcı, ileride çoklu hesap hazır",
+      "email": "E-posta",
+      "password": "Şifre",
+      "pin": "PIN (opsiyonel, PWA kilidi için)",
+      "pinPlaceholder": "4-6 hane",
+      "submit": "Giriş Yap",
+      "submitting": "Giriş...",
+      "noAccount": "Hesabın yok mu?",
+      "registerLink": "Kayıt Ol",
+      "home": "Ana Sayfa",
+      "demo": "Demo: {email} / {password} — `backend/seed.py` ile oluşturulur"
+    },
+    "register": {
+      "title": "Kayıt Ol",
+      "subtitle": "Yeni hesap oluştur",
+      "fullName": "Ad Soyad",
+      "email": "E-posta",
+      "password": "Şifre",
+      "submit": "Kayıt Ol",
+      "hasAccount": "Zaten hesabın var mı?",
+      "loginLink": "Giriş Yap",
+      "success": "Kayıt başarılı →"
+    },
+    "pinLock": {
+      "title": "🔒 Koç Matrix Kilitli",
+      "description": "PWA açıldı — PIN gir veya biyometri ile aç",
+      "placeholder": "PIN (4-6 hane)",
+      "unlock": "Kilidi Aç",
+      "biometric": "FaceID / Parmak İzi ile Aç",
+      "logout": "Çıkış Yap",
+      "wrongPin": "PIN hatalı",
+      "biometricFailed": "Biyometri başarısız",
+      "biometricUnlockFailed": "Biyometri ok ama PIN çözülemedi"
+    }
+  },
+  "Notifications": {
+    "enable": "🔔 Bildirimleri Aç",
+    "enabled": "🔔 Açık",
+    "title": "Koç Matrix — Bildirimler Açık",
+    "body": "Gün/hafta/ay kapanış + düşüş uyarıları artık gelecek"
+  },
+  "Pdf": {
+    "title": "KOÇ MATRIX ULTRA — AYLIK ÖZET",
+    "period": "Dönem: {period}",
+    "generated": "Oluşturulma: {date}",
+    "basicMetrics": "TEMEL METRİKLER",
+    "totalTrades": "Toplam İşlem",
+    "winRate": "Kazanma Oranı",
+    "profitFactor": "Kâr Faktörü",
+    "expectancy": "Beklenti",
+    "totalR": "Toplam R",
+    "totalCash": "Toplam ₺",
+    "riskOfRuin": "İflas Riski",
+    "breakdown": "DAĞILIM",
+    "noData": "Veri yok"
+  }
+}

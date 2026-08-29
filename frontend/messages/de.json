@@ -1,0 +1,254 @@
+{
+  "Brand": {
+    "name": "KOÇ MATRIX ULTRA",
+    "subtitle": "TRADING JOURNAL & EXECUTION ANALYTICS ENGINE"
+  },
+  "Common": {
+    "loading": "Laden…",
+    "error": "Fehler",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "open": "Öffnen →",
+    "connectionError": "Verbindungsfehler: {error} — Backend mit docker compose up starten.",
+    "noData": "Keine Daten — Trade hinzufügen",
+    "total": "Gesamt: {value}",
+    "apiStatusOk": "Online",
+    "apiStatusError": "Offline (docker compose up?)",
+    "apiStatusChecking": "Prüfen..."
+  },
+  "Nav": {
+    "dashboard": "Dashboard",
+    "trades": "Trades",
+    "calendar": "Kalender",
+    "analytics": "Analyse",
+    "settings": "Einstellungen",
+    "live": "LIVE — WS",
+    "newTrade": "+ Neuer Trade",
+    "logout": "Abmelden",
+    "menu": "Menü"
+  },
+  "Home": {
+    "apiLabel": "API",
+    "description": "Production-grade, kein Datenverlustrisiko, PWA + Realtime. Gleichzeitig auf iPhone/Android/Mac geöffnet, auf einem Gerät Trade hinzufügen — auf dem anderen sofort sichtbar.",
+    "cards": {
+      "dashboardTitle": "Dashboard",
+      "dashboardDesc": "Kapitalkurve, Trefferquote, Profitfaktor, Erwartungswert, Sharpe",
+      "tradesTitle": "Trades",
+      "tradesDesc": "CRUD + Teilausstiege (TP1/TP2/TP3) + Bearbeitungsverlauf",
+      "calendarTitle": "Kalender",
+      "calendarDesc": "Tägliche Netto-R Heatmap, R/€-Umschalter, Monatsabschluss",
+      "analyticsTitle": "Analyse",
+      "analyticsDesc": "Erwartungswert & Payoff, Zeit-Aufschlüsselung"
+    },
+    "quickStart": "SCHNELLSTART (ZERO TERMINAL)",
+    "quickStartSteps": {
+      "1": "GitHub Releases → KoçMatrixUltra.dmg herunterladen",
+      "2": "Per Drag & Drop installieren → App öffnen",
+      "3": "Menüleiste ● Journal läuft → App öffnen",
+      "4": "Auf dem iPhone via Tailscale mit derselben Adresse verbinden"
+    },
+    "goDashboard": "Zum Dashboard",
+    "apiDocs": "API Docs →"
+  },
+  "Dashboard": {
+    "title": "Dashboard — Ausführungs-Analyse",
+    "subtitle": "Ausführungs-Analyse",
+    "modeR": "R-Modus",
+    "modeCash": "€/$-Modus",
+    "modeCashAlt": "€-Modus",
+    "sessionExpired": "Sitzung abgelaufen — bitte erneut anmelden",
+    "sessionMissing": "Keine Sitzung — bitte über /login anmelden",
+    "invalidData": "Ungültige Analyse-Daten",
+    "metrics": {
+      "winRate": "TREFFERQUOTE",
+      "winCount": "{win}G / {loss}V — {total} Trades",
+      "profitFactor": "PROFITFAKTOR",
+      "expectancy": "Erwartungswert",
+      "expectancyValue": "Erwartungswert {value}R",
+      "total": "GESAMT",
+      "avgRR": "Ø RR {value} — PF {pf}",
+      "sharpeSortino": "SHARPE / SORTINO",
+      "drawdownRor": "DD {drawdown} • RoR %{ror}",
+      "noEmotionData": "Keine Daten — Trade hinzufügen"
+    },
+    "sections": {
+      "equityCurve": "KAPITALKURVE ({mode})",
+      "breakdownEmotion": "AUFSCHLÜSSELUNG — EMOTION",
+      "breakdownSetup": "NACH SETUP",
+      "breakdownHour": "STÜNDLICHE AUFSCHLÜSSELUNG (IST)",
+      "breakdownAccount": "NACH KONTO",
+      "accountLabel": "Konto #{id}"
+    },
+    "chart": {
+      "winRateUnit": "%",
+      "tradesUnit": "Trades",
+      "rExp": "R Erw."
+    }
+  },
+  "Trades": {
+    "title": "Trades",
+    "newTrade": "NEUER TRADE",
+    "newTradeButton": "+ Neuer Trade",
+    "close": "Schließen",
+    "form": {
+      "symbol": "Symbol",
+      "direction": "Richtung",
+      "long": "LONG",
+      "short": "SHORT",
+      "entryPrice": "Einstiegspreis",
+      "stopLoss": "Stop-Loss",
+      "takeProfit": "Take-Profit",
+      "positionSize": "Positionsgröße",
+      "account": "Konto",
+      "entryDate": "Einstiegsdatum",
+      "commission": "Kommission",
+      "emotions": "Emotionen",
+      "indicators": "Indikatoren",
+      "setups": "Setups",
+      "chart": "Chart (Einstieg/Ausstieg)",
+      "chartCount": "{count} Bild(er) hochgeladen",
+      "notes": "Notiz (Markdown)",
+      "notesPlaceholder": "Setup-Notiz",
+      "save": "Speichern — OpenAPI strikter Vertrag"
+    },
+    "list": {
+      "title": "OFFENE & GESCHLOSSENE TRADES ({count})",
+      "empty": "Noch keine Trades — zum Seeden backend/tests/seed.py ausführen oder oben hinzufügen.",
+      "entryToSL": "Einstieg {entry} → SL {sl} • TP1 {tp} • {no} • Kommission {fee}",
+      "meta": "Emotion: {emotions} • Setup: {setups} • Score {score}",
+      "rr": "Geplantes RR {plan} • Tatsächlich {real}",
+      "history": "Verlauf",
+      "exits": "Ausstiege: {exits}",
+      "softDeleted": "Soft gelöscht"
+    },
+    "detail": {
+      "editHistory": "Bearbeitungsverlauf — Was war die erste Notiz?",
+      "noHistory": "Kein Verlauf"
+    }
+  },
+  "Calendar": {
+    "title": "Kalender-Heatmap",
+    "modeR": "R-Modus",
+    "modeCash": "€-Modus",
+    "total": "Gesamt: {r}R / {cash}€",
+    "downloadPdf": "📄 PDF herunterladen",
+    "tradeCount": "{count} Trades",
+    "days": {
+      "monday": "Mo",
+      "tuesday": "Di",
+      "wednesday": "Mi",
+      "thursday": "Do",
+      "friday": "Fr",
+      "saturday": "Sa",
+      "sunday": "So"
+    }
+  },
+  "Analytics": {
+    "title": "Erweiterte Analyse — R & € Parallel",
+    "downloadPdf": "📄 PDF herunterladen (jsPDF)",
+    "print": "Drucken",
+    "summary": "Diesen Monat: {r}R / {cash}€ • Bestes Setup: {setup}",
+    "sections": {
+      "expectancyPayoff": "ERWARTUNGSWERT & PAYOFF",
+      "timeBreakdown": "ZEIT-AUFSCHLÜSSELUNG — Tag / Stunde (IST)"
+    },
+    "metrics": {
+      "expectancy": "Erwartungswert",
+      "payoff": "Payoff"
+    },
+    "details": {
+      "profitFactor": "Profitfaktor: {value}",
+      "avgWinLoss": "Ø Gewinn {win}R vs Ø Verlust {loss}R",
+      "rrDeviation": "RR Abweichung: {value}",
+      "risk": "RISIKO",
+      "sharpeSortino": "Sharpe {sharpe} • Sortino {sortino}",
+      "maxDD": "Max. Drawdown {r}R / {cash}",
+      "riskOfRuin": "Ruin-Risiko %{value}",
+      "streak": "Serie {wins}G / {losses}V",
+      "day": "Tag",
+      "hour": "Stunde"
+    }
+  },
+  "Settings": {
+    "title": "Einstellungen — Konten & Referenztabellen",
+    "description": "Keine hardcodierten Enums — Nutzer fügt eigene Setup/Indikator/Emotion-Tags hinzu.",
+    "sections": {
+      "accounts": "KONTEN",
+      "setups": "Setups",
+      "indicators": "Indikatoren",
+      "emotions": "Emotionen",
+      "webhookBackup": "WEBHOOK & BACKUP"
+    },
+    "form": {
+      "name": "Name",
+      "add": "Hinzufügen",
+      "delete": "Löschen",
+      "noData": "Noch keine Daten",
+      "placeholder": "Neues {name} hinzufügen"
+    },
+    "accounts": {
+      "namePlaceholder": "Kontoname",
+      "create": "Konto erstellen"
+    }
+  },
+  "Auth": {
+    "login": {
+      "title": "Anmelden",
+      "subtitle": "JWT + PIN-Verschlüsselung — Einzelbenutzer, bereit für Multi-Konto",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "pin": "PIN (optional, für PWA-Sperre)",
+      "pinPlaceholder": "4-6 Ziffern",
+      "submit": "Anmelden",
+      "submitting": "Anmelden...",
+      "noAccount": "Kein Konto?",
+      "registerLink": "Registrieren",
+      "home": "Startseite",
+      "demo": "Demo: {email} / {password} — erstellt via backend/seed.py"
+    },
+    "register": {
+      "title": "Registrieren",
+      "subtitle": "Neues Konto erstellen",
+      "fullName": "Vollständiger Name",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Registrieren",
+      "hasAccount": "Bereits ein Konto?",
+      "loginLink": "Anmelden",
+      "success": "Registrierung erfolgreich →"
+    },
+    "pinLock": {
+      "title": "🔒 Koç Matrix gesperrt",
+      "description": "PWA geöffnet — PIN eingeben oder mit Biometrie entsperren",
+      "placeholder": "PIN (4-6 Ziffern)",
+      "unlock": "Entsperren",
+      "biometric": "Mit FaceID / Fingerabdruck entsperren",
+      "logout": "Abmelden",
+      "wrongPin": "Falsche PIN",
+      "biometricFailed": "Biometrie fehlgeschlagen",
+      "biometricUnlockFailed": "Biometrie ok, aber PIN konnte nicht entschlüsselt werden"
+    }
+  },
+  "Notifications": {
+    "enable": "🔔 Benachrichtigungen aktivieren",
+    "enabled": "🔔 An",
+    "title": "Koç Matrix — Benachrichtigungen an",
+    "body": "Tages-/Wochen-/Monatsabschluss + Drawdown-Warnungen kommen jetzt"
+  },
+  "Pdf": {
+    "title": "KOÇ MATRIX ULTRA — MONATSÜBERSICHT",
+    "period": "Zeitraum: {period}",
+    "generated": "Erstellt: {date}",
+    "basicMetrics": "BASIS-METRIKEN",
+    "totalTrades": "Trades Gesamt",
+    "winRate": "Trefferquote",
+    "profitFactor": "Profitfaktor",
+    "expectancy": "Erwartungswert",
+    "totalR": "Gesamt R",
+    "totalCash": "Gesamt €",
+    "riskOfRuin": "Ruin-Risiko",
+    "breakdown": "AUFSCHLÜSSELUNG",
+    "noData": "Keine Daten"
+  }
+}
