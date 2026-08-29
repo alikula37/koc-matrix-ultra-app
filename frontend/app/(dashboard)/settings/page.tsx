@@ -7,15 +7,15 @@ import { Button } from "@/components/ui/button"
 function RefManager({ title, endpoint }: { title:string, endpoint:string }){
   const [items,setItems]=useState<any[]>([])
   const [name,setName]=useState("")
-  const load=()=>fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/refs/${endpoint}`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setItems).catch(()=>setItems([]))
+  const load=()=>fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"}/api/v1/refs/${endpoint}`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setItems).catch(()=>setItems([]))
   useEffect(()=>{load()},[])
   const add=async()=>{
     if(!name.trim()) return
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/refs/${endpoint}`,{method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}, body: JSON.stringify({name}) })
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"}/api/v1/refs/${endpoint}`,{method:"POST", headers:{ "Content-Type":"application/json", Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}, body: JSON.stringify({name}) })
     setName(""); load()
   }
   const del=async(id:number)=>{
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/refs/${endpoint}/${id}`,{method:"DELETE", headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}})
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"}/api/v1/refs/${endpoint}/${id}`,{method:"DELETE", headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}})
     load()
   }
   return (
@@ -37,10 +37,10 @@ export default function SettingsPage(){
   const [accName,setAccName]=useState("")
   const [accCur,setAccCur]=useState("USDT")
 
-  const loadAcc=()=> fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/accounts`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setAccounts).catch(()=>{})
+  const loadAcc=()=> fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"}/api/v1/accounts`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setAccounts).catch(()=>{})
   useEffect(()=>{loadAcc()},[])
   const addAcc=async()=>{
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/accounts`,{method:"POST", headers:{"Content-Type":"application/json", Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}, body: JSON.stringify({name:accName, base_currency:accCur})})
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"}/api/v1/accounts`,{method:"POST", headers:{"Content-Type":"application/json", Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}, body: JSON.stringify({name:accName, base_currency:accCur})})
     setAccName(""); loadAcc()
   }
 

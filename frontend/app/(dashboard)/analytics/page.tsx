@@ -9,7 +9,7 @@ export default function AnalyticsPage() {
   useEffect(()=>{
     api.analytics().then(setData).catch(()=>{})
     // period summary for PDF
-    fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}/api/v1/analytics/period-summary?period=monthly`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setPeriod).catch(()=>{})
+    fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"}/api/v1/analytics/period-summary?period=monthly`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}}).then(r=>r.json()).then(setPeriod).catch(()=>{})
   },[])
   if(!data) return <div className="py-10 text-center text-[#64748b]">Yükleniyor…</div>
   const exportPdf = async () => {

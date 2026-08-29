@@ -1,4 +1,5 @@
 "use client"
+// cache-bust 2026-08-29 trades defensive
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,28 +13,43 @@ export default function TradesPage() {
   const [history, setHistory] = useState<any[]|null>(null)
   const [selectedExit, setSelectedExit] = useState<any>(null)
 
-  const load = ()=> api.trades().then(setTrades).catch(()=>{})
+  const load = ()=> api.trades().then(d=> setTrades(Array.isArray(d)? d : [])).catch(()=> setTrades([]))
   const loadRefs = ()=>{
-    const h={ Authorization:`Bearer ${localStorage.getItem("access_token")||""}` }
-    const base = process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
+    const token = typeof window!=="undefined" ? localStorage.getItem("access_token") : ""
+    if(!token) { setRefs({setups:[],indicators:[],emotions:[]}); return }
+    const h={ Authorization:`Bearer ${token}` }
+    const base = process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"
+    const safe = (url:string)=> fetch(url,{headers:h}).then(async r=>{
+      if(!r.ok) return []
+      const j=await r.json().catch(()=>[])
+      return Array.isArray(j) ? j : []
+    }).catch(()=>[])
     Promise.all([
-      fetch(`${base}/api/v1/refs/setups`,{headers:h}).then(r=>r.json()).catch(()=>[]),
-      fetch(`${base}/api/v1/refs/indicators`,{headers:h}).then(r=>r.json()).catch(()=>[]),
-      fetch(`${base}/api/v1/refs/emotions`,{headers:h}).then(r=>r.json()).catch(()=>[]),
-    ]).then(([a,b,c])=> setRefs({setups:a,indicators:b,emotions:c}))
+      safe(`${base}/api/v1/refs/setups`),
+      safe(`${base}/api/v1/refs/indicators`),
+      safe(`${base}/api/v1/refs/emotions`),
+    ]).then(([a,b,c])=> setRefs({setups: Array.isArray(a)?a:[], indicators: Array.isArray(b)?b:[], emotions: Array.isArray(c)?c:[]}))
   }
-  useEffect(()=>{ load(); loadRefs(); const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000"; try{ const ws=new WebSocket(`${wsUrl}/ws/trades`); ws.onmessage=(e)=>{ if(e.data.includes("trade")) load() }; return()=>ws.close()}catch{} }, [])
+  useEffect(()=>{
+    // if not logged in, redirect to login
+    const tok = typeof window!=="undefined" ? localStorage.getItem("access_token") : null
+    const enc = typeof window!=="undefined" ? localStorage.getItem("enc_token") : null
+    if(!tok && !enc) { window.location.href="/login"; return }
+    load(); loadRefs();
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8001";
+    try{ const ws=new WebSocket(`${wsUrl}/ws/trades`); ws.onmessage=(e)=>{ try{ if(typeof e.data==="string" && e.data.includes("trade")) load() } catch{} }; ws.onerror=()=>{}; return()=>{ try{ ws.close()}catch{} } }catch{}
+  }, [])
 
   const submit = async(e:React.FormEvent)=>{ e.preventDefault(); await api.createTrade({...form, entry_date: new Date(form.entry_date).toISOString()}); setShowForm(false); load() }
   const openHistory = async(id:number)=>{
-    const base = process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
+    const base = process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"
     const r = await fetch(`${base}/api/v1/trades/${id}/history`,{headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}})
     setHistory(await r.json())
   }
   const uploadChart = async(e:React.ChangeEvent<HTMLInputElement>)=>{
     const f=e.target.files?.[0]; if(!f) return
     const fd=new FormData(); fd.append("file",f)
-    const base = process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"
+    const base = process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"
     const r = await fetch(`${base}/api/v1/media/upload`,{method:"POST", headers:{Authorization:`Bearer ${localStorage.getItem("access_token")||""}`}, body: fd})
     const j=await r.json()
     if(j.path) setForm((prev:any)=>({...prev, chart_snapshot_paths:[...(prev.chart_snapshot_paths||[]), j.path]}))
@@ -78,7 +94,7 @@ export default function TradesPage() {
                 <div className="text-xs mono text-[#64748b]">Giriş {t.entry_price} → SL {t.stop_loss} • TP1 {t.take_profit_1} • {t.trade_no} • Komisyon {t.commission_fees}</div>
                 {(t.emotions?.length || t.setups?.length) && <div className="text-[11px] text-[#94a3b8] mt-1">Duygu: {t.emotions?.join(", ")} • Setup: {t.setups?.join(", ")} • Skor {t.execution_quality_score}</div>}
                 {t.trade_setup_notes && <div className="text-xs text-[#94a3b8] mt-1">{t.trade_setup_notes.slice(0,120)}</div>}
-                {t.chart_snapshot_paths?.length>0 && <div className="flex gap-1 mt-2">{t.chart_snapshot_paths.map((p:string,i:number)=><img key={i} src={`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8000"}${p}`} alt="chart" className="w-16 h-10 object-cover rounded border border-[#1e293b]" />)}</div>}
+                {t.chart_snapshot_paths?.length>0 && <div className="flex gap-1 mt-2">{t.chart_snapshot_paths.map((p:string,i:number)=><img key={i} src={`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:8001"}${p}`} alt="chart" className="w-16 h-10 object-cover rounded border border-[#1e293b]" />)}</div>}
                 {t.exits?.length>0 && <div className="mt-2 text-[11px] mono bg-[#020617] border border-[#1e293b] rounded p-2">Çıkışlar: {t.exits.map((e:any)=>`${e.exit_reason} ${e.exit_quantity} @${e.exit_price} (${e.pnl_r}R)`).join(" • ")}</div>}
               </div>
               <div className="text-right shrink-0">

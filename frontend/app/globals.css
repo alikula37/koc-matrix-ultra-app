@@ -27,3 +27,60 @@
 ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
 body { background: #020617; color: #f8fafc; font-family: Inter, system-ui, sans-serif; }
 .mono { font-family: 'JetBrains Mono', monospace; }
+
+/* KOÇ MATRIX ULTRA — Neon Nav (active = green pulse, hover = cyan slide + shimmer) */
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,136,.42), 0 0 22px rgba(0,255,136,.16), inset 0 0 8px rgba(0,255,136,.11); }
+  50% { box-shadow: 0 0 14px rgba(0,255,136,.68), 0 0 30px rgba(0,255,136,.26), inset 0 0 10px rgba(0,255,136,.17); }
+}
+@keyframes shimmerSweep {
+  0% { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(220%) skewX(-12deg); }
+}
+.nav-item { position: relative; isolation: isolate; border: 1px solid transparent; transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease; overflow: hidden; }
+.nav-item::after {
+  content: "";
+  position: absolute;
+  left: 10px; right: 10px; bottom: 0;
+  height: 2px; border-radius: 9999px;
+  background: linear-gradient(90deg, #00ff88, #00e5ff);
+  box-shadow: 0 0 8px rgba(0,255,136,.85);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 220ms cubic-bezier(.4,0,.2,1);
+}
+.nav-item-active {
+  background: linear-gradient(135deg, rgba(0,255,136,.14), rgba(0,229,255,.08));
+  border-color: rgba(0,255,136,.45) !important;
+  color: #00ff88 !important;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(0,255,136,.9), 0 0 18px rgba(0,255,136,.42);
+  animation: neonPulse 2.6s ease-in-out infinite;
+}
+.nav-item-active::after { transform: scaleX(1); }
+.nav-item:not(.nav-item-active):hover {
+  background: rgba(30,41,59,.88);
+  border-color: rgba(51,65,85,.95);
+  color: #f1f5f9 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.36), 0 0 14px rgba(0,229,255,.14);
+}
+.nav-item:not(.nav-item-active):hover::after {
+  transform: scaleX(1);
+  background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+  box-shadow: 0 0 8px rgba(0,229,255,.75);
+}
+.nav-item::before {
+  content: "";
+  position: absolute; inset: 0; border-radius: 0.5rem;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.07) 44%, rgba(255,255,255,.13) 50%, transparent 64%);
+  transform: translateX(-120%) skewX(-12deg);
+  opacity: 0; pointer-events: none;
+}
+.nav-item:not(.nav-item-active):hover::before { animation: shimmerSweep 620ms ease; opacity: 1; }
+.nav-item:focus-visible { border-color: rgba(0,255,136,.55); }
+@media (prefers-reduced-motion: reduce) {
+  .nav-item, .nav-item::after, .nav-item-active { animation: none !important; transition: none !important; }
+  .nav-item:hover { transform: none !important; }
+}

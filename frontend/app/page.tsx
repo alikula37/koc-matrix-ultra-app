@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 export default function Home() {
   const [apiStatus, setApiStatus] = useState<"checking"|"ok"|"error">("checking")
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/health`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001"}/api/v1/health`)
       .then(r=>r.json()).then(()=>setApiStatus("ok")).catch(()=>setApiStatus("error"))
   }, [])
   return (
@@ -43,7 +43,7 @@ export default function Home() {
         </ol>
         <div className="mt-3 flex gap-2">
           <Link href="/dashboard" className="bg-[#00ff88] text-black px-4 py-2 rounded-lg text-sm font-bold">Dashboard’a Git</Link>
-          <a href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/docs`} target="_blank" className="bg-[#1e293b] text-white px-4 py-2 rounded-lg text-sm border border-[#334155]">API Docs →</a>
+          <a href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001"}/docs`} target="_blank" className="bg-[#1e293b] text-white px-4 py-2 rounded-lg text-sm border border-[#334155]">API Docs →</a>
         </div>
       </div>
     </main>
