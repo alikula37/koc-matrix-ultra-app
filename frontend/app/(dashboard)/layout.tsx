@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { isLocked } from "@/lib/auth"
+import { isLocked, lock } from "@/lib/auth"
 import PinLock from "@/components/PinLock"
 
 export default function DashboardLayout({children}:{children:React.ReactNode}) {
@@ -10,8 +10,8 @@ export default function DashboardLayout({children}:{children:React.ReactNode}) {
   useEffect(()=>{
     setLocked(isLocked())
     setChecked(true)
-    // lock on visibility hidden (PWA background)
-    const onHide = ()=>{ if(document.visibilityState==="hidden") { try{ const { lock } = require("@/lib/auth"); lock() } catch{} } }
+    // lock on visibility hidden (PWA background) — AES-GCM async
+    const onHide = ()=>{ if(document.visibilityState==="hidden") { lock().catch(()=>{}) } }
     document.addEventListener("visibilitychange", onHide)
     return ()=> document.removeEventListener("visibilitychange", onHide)
   },[])

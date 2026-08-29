@@ -8,11 +8,11 @@ export default function PinLock({ onUnlock }: { onUnlock: ()=>void }) {
   const [err, setErr] = useState("")
   const [bio, setBio] = useState(!! (typeof window!=="undefined" && (window as any).PublicKeyCredential))
 
-  const submit = (e:React.FormEvent)=>{ e.preventDefault(); if(unlockWithPin(pin)) { onUnlock(); location.reload() } else setErr("PIN hatalı") }
+  const submit = async (e:React.FormEvent)=>{ e.preventDefault(); if(await unlockWithPin(pin)) { onUnlock(); location.reload() } else setErr("PIN hatalı") }
   const handleBio = async()=>{
     if(await authWithBiometric()){
       const hash = localStorage.getItem("pin_hash")
-      if(hash && unlockWithPin(atob(hash))) { onUnlock(); location.reload() }
+      if(hash && await unlockWithPin(atob(hash))) { onUnlock(); location.reload() }
       else setErr("Biometric ok ama PIN çözülemedi")
     } else setErr("Biometric başarısız")
   }
