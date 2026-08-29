@@ -1,0 +1,45 @@
+name: Release Please — Auto Tag & Release
+
+# Amaç: main'e her push/merge'te conventional commits (feat:, fix:, BREAKING CHANGE) veya
+# package.json version bump'a göre otomatik semver tag (v1.0.0) + GitHub Release + changelog oluştur.
+# Manuel `git tag` / GitHub UI ile Release oluşturma ihtiyacı kalkar.
+# Sonra `.github/workflows/build-release.yml` bu tag/Release'i yakalayıp .dmg/.zip/.exe build eder.
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release Please
+        uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          # Token: default GITHUB_TOKEN yeterli (contents:write + pull-requests:write).
+          # Org/repo için branch protection varsa, token'in bypass hakkı olmalı — mevcut main koruması
+          # admin'leri enforce ediyor ancak GITHUB_TOKEN admin değilse PR oluşturamaz.
+          # Bu durumda Settings → Branches → Allow specified actors to bypass required pull requests
+          # bölümüne `github-actions[bot]` ekleyin veya PAT kullanın (RELEASE_PLEASE_TOKEN).
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Config dosyaları repo kökünde: release-please-config.json + .release-please-manifest.json
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      # Opsiyonel log: release oluşturuldu mu?
+      - name: Log release creation
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "Release created: ${{ steps.release.outputs.tag_name }}"
+          echo "Release URL: ${{ steps.release.outputs.html_url }}"
+          echo "Bu tag build-release.yml'i tetikleyecek → .dmg/.exe build başlayacak."
+
+      # Fallback auto-tag (eğer conventional commit yoksa ama package.json version manuel bump edildiyse):
+      # release-please bu durumu zaten yakalar, ancak ekstra garanti için basit tag action da eklenebilir.
+      # Aşağıdaki adım sadece release_created false ve version değiştiyse tag oluşturmaz — release-please yeterli.
+      # İhtiyaç duyulursa alternatif: anothrNick/github-tag-action ile otomatik patch bump.
