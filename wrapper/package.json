@@ -15,15 +15,16 @@
     "dist": "electron-builder --mac --win",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "_deprecated": "echo '⚠ wrapper/ legacy — yeni mimari src/main (+ electron-vite) kullanın. Bu paket sadece geriye dönük uyumluluk için korunuyor.'"
   },
   "dependencies": {
     "electron-store": "^8.1.0",
     "electron-updater": "^6.3.9"
   },
   "devDependencies": {
-    "electron": "^30.0.0",
-    "electron-builder": "^24.13.3"
+    "electron": "^38.1.2",
+    "electron-builder": "^26.0.12"
   },
   "build": {
     "appId": "com.kocmatrix.ultra",
