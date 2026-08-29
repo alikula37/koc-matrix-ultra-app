@@ -17,6 +17,7 @@ from app.api.v1.accounts import router as accounts_router
 from app.api.v1.refs import setups_router, indicators_router, emotions_router
 from app.api.v1.media import router as media_router
 from app.api.v1.notifications import router as notifications_router
+from app.api.v1.market import router as market_router
 from fastapi.staticfiles import StaticFiles
 import pathlib
 
@@ -44,6 +45,7 @@ app.include_router(indicators_router, prefix="/api/v1/refs")
 app.include_router(emotions_router, prefix="/api/v1/refs")
 app.include_router(media_router, prefix="/api/v1")
 app.include_router(notifications_router, prefix="/api/v1")
+app.include_router(market_router, prefix="/api/v1")
 
 # Scheduler — daily/weekly/monthly + drawdown/streak via IST
 try:

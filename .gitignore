@@ -50,3 +50,4 @@ wrapper/dist/
 # Caddy
 caddy_data/
 test-results/
+frontend/tsconfig.tsbuildinfo
