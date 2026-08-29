@@ -6,6 +6,7 @@ const withPWA = (_withPWA.default || _withPWA)({
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
 })
+const withNextIntl = require('next-intl/plugin')('./i18n/request.ts')
 
 const nextConfig = {
   output: 'standalone',
@@ -25,4 +26,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withPWA(nextConfig)
+module.exports = withPWA(withNextIntl(nextConfig))

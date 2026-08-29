@@ -1,0 +1,252 @@
+{
+  "Brand": {
+    "name": "KOÇ MATRIX ULTRA",
+    "subtitle": "TRADING JOURNAL & EXECUTION ANALYTICS ENGINE"
+  },
+  "Common": {
+    "loading": "Loading…",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "open": "Open →",
+    "connectionError": "Connection error: {error} — start backend with docker compose up.",
+    "noData": "No data — add a trade",
+    "total": "Total: {value}",
+    "apiStatusOk": "Online",
+    "apiStatusError": "Offline (docker compose up?)",
+    "apiStatusChecking": "Checking..."
+  },
+  "Nav": {
+    "dashboard": "Dashboard",
+    "trades": "Trades",
+    "calendar": "Calendar",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "live": "LIVE — WS",
+    "newTrade": "+ New Trade",
+    "logout": "Logout",
+    "menu": "Menu"
+  },
+  "Home": {
+    "apiLabel": "API",
+    "description": "Production-grade, zero data-loss risk, PWA + realtime. Open on iPhone/Android/Mac at the same time, add a trade on one device — see it instantly on another.",
+    "cards": {
+      "dashboardTitle": "Dashboard",
+      "dashboardDesc": "Equity curve, Win Rate, PF, Expectancy, Sharpe",
+      "tradesTitle": "Trades",
+      "tradesDesc": "CRUD + partial exits (TP1/TP2/TP3) + edit history",
+      "calendarTitle": "Calendar",
+      "calendarDesc": "Daily Net R heatmap, R/$ toggle, month-end summary"
+    },
+    "quickStart": "QUICK START (ZERO TERMINAL)",
+    "quickStartSteps": {
+      "1": "GitHub Releases → Download KoçMatrixUltra.dmg",
+      "2": "Drag & drop to install → Open the app",
+      "3": "Menu bar ● Journal Running → Open App",
+      "4": "On iPhone, connect via Tailscale with the same address"
+    },
+    "goDashboard": "Go to Dashboard",
+    "apiDocs": "API Docs →"
+  },
+  "Dashboard": {
+    "title": "Dashboard — Execution Analytics",
+    "subtitle": "Execution Analytics",
+    "modeR": "R Mode",
+    "modeCash": "$/₺ Mode",
+    "modeCashAlt": "$ Mode",
+    "sessionExpired": "Session expired — please log in again",
+    "sessionMissing": "No session — please log in via /login",
+    "invalidData": "Invalid analytics data",
+    "metrics": {
+      "winRate": "WIN RATE",
+      "winCount": "{win}W / {loss}L — {total} trades",
+      "profitFactor": "PROFIT FACTOR",
+      "expectancy": "Expectancy",
+      "expectancyValue": "Expectancy {value}R",
+      "total": "TOTAL",
+      "avgRR": "Avg. RR {value} — PF {pf}",
+      "sharpeSortino": "SHARPE / SORTINO",
+      "drawdownRor": "DD {drawdown} • RoR %{ror}",
+      "noEmotionData": "No data — add a trade"
+    },
+    "sections": {
+      "equityCurve": "EQUITY CURVE ({mode})",
+      "breakdownEmotion": "BREAKDOWN — EMOTION",
+      "breakdownSetup": "BY SETUP",
+      "breakdownHour": "HOURLY BREAKDOWN (IST)",
+      "breakdownAccount": "BY ACCOUNT",
+      "accountLabel": "Account #{id}"
+    },
+    "chart": {
+      "winRateUnit": "%",
+      "tradesUnit": "trades",
+      "rExp": "R exp"
+    }
+  },
+  "Trades": {
+    "title": "Trades",
+    "newTrade": "NEW TRADE",
+    "newTradeButton": "+ New Trade",
+    "close": "Close",
+    "form": {
+      "symbol": "Symbol",
+      "direction": "Direction",
+      "long": "LONG",
+      "short": "SHORT",
+      "entryPrice": "Entry Price",
+      "stopLoss": "Stop Loss",
+      "takeProfit": "Take Profit",
+      "positionSize": "Position Size",
+      "account": "Account",
+      "entryDate": "Entry Date",
+      "commission": "Commission",
+      "emotions": "Emotions",
+      "indicators": "Indicators",
+      "setups": "Setups",
+      "chart": "Chart (entry/exit)",
+      "chartCount": "{count} image(s) uploaded",
+      "notes": "Note (Markdown)",
+      "notesPlaceholder": "Setup note",
+      "save": "Save — OpenAPI strict contract"
+    },
+    "list": {
+      "title": "OPEN & CLOSED TRADES ({count})",
+      "empty": "No trades yet — run backend/tests/seed.py to seed or add one above.",
+      "entryToSL": "Entry {entry} → SL {sl} • TP1 {tp} • {no} • Commission {fee}",
+      "meta": "Emotion: {emotions} • Setup: {setups} • Score {score}",
+      "rr": "Planned RR {plan} • Actual {real}",
+      "history": "History",
+      "exits": "Exits: {exits}",
+      "softDeleted": "Soft deleted"
+    },
+    "detail": {
+      "editHistory": "Edit History — What was the first note?",
+      "noHistory": "No history"
+    }
+  },
+  "Calendar": {
+    "title": "Calendar Heatmap",
+    "modeR": "R Mode",
+    "modeCash": "$ Mode",
+    "total": "Total: {r}R / {cash}$",
+    "downloadPdf": "📄 Download PDF",
+    "tradeCount": "{count} trades",
+    "days": {
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat",
+      "sunday": "Sun"
+    }
+  },
+  "Analytics": {
+    "title": "Advanced Analytics — R & $ Parallel",
+    "downloadPdf": "📄 Download PDF (jsPDF)",
+    "print": "Print",
+    "summary": "This Month: {r}R / {cash}$ • Best setup: {setup}",
+    "sections": {
+      "expectancyPayoff": "EXPECTANCY & PAYOFF",
+      "timeBreakdown": "TIME BREAKDOWN — Day / Hour (IST)"
+    },
+    "metrics": {
+      "expectancy": "Expectancy",
+      "payoff": "Payoff"
+    },
+    "details": {
+      "profitFactor": "Profit Factor: {value}",
+      "avgWinLoss": "Avg. Win {win}R vs Avg. Loss {loss}R",
+      "rrDeviation": "RR Deviation: {value}",
+      "risk": "RISK",
+      "sharpeSortino": "Sharpe {sharpe} • Sortino {sortino}",
+      "maxDD": "Max DD {r}R / {cash}",
+      "riskOfRuin": "Risk of Ruin %{value}",
+      "streak": "Streak {wins}W / {losses}L",
+      "day": "Day",
+      "hour": "Hour"
+    }
+  },
+  "Settings": {
+    "title": "Settings — Accounts & Reference Tables",
+    "description": "Not hardcoded enums — users add their own setup/indicator/emotion tags.",
+    "sections": {
+      "accounts": "ACCOUNTS",
+      "setups": "Setups",
+      "indicators": "Indicators",
+      "emotions": "Emotions",
+      "webhookBackup": "WEBHOOK & BACKUP"
+    },
+    "form": {
+      "name": "Name",
+      "add": "Add",
+      "delete": "Delete",
+      "noData": "No data yet",
+      "placeholder": "New {name}"
+    },
+    "accounts": {
+      "namePlaceholder": "Account name",
+      "create": "Create Account"
+    }
+  },
+  "Auth": {
+    "login": {
+      "title": "Log In",
+      "subtitle": "JWT + PIN encrypt — single user, ready for multi-account",
+      "email": "Email",
+      "password": "Password",
+      "pin": "PIN (optional, for PWA lock)",
+      "pinPlaceholder": "4-6 digits",
+      "submit": "Log In",
+      "submitting": "Logging in...",
+      "noAccount": "No account?",
+      "registerLink": "Sign Up",
+      "home": "Home",
+      "demo": "Demo: {email} / {password} — created via backend/seed.py"
+    },
+    "register": {
+      "title": "Sign Up",
+      "subtitle": "Create a new account",
+      "fullName": "Full Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign Up",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log In",
+      "success": "Registration successful →"
+    },
+    "pinLock": {
+      "title": "🔒 Koç Matrix Locked",
+      "description": "PWA opened — enter PIN or unlock with biometrics",
+      "placeholder": "PIN (4-6 digits)",
+      "unlock": "Unlock",
+      "biometric": "Unlock with FaceID / Fingerprint",
+      "logout": "Logout",
+      "wrongPin": "Wrong PIN",
+      "biometricFailed": "Biometric failed",
+      "biometricUnlockFailed": "Biometric ok but PIN could not be decrypted"
+    }
+  },
+  "Notifications": {
+    "enable": "🔔 Enable Notifications",
+    "enabled": "🔔 On",
+    "title": "Koç Matrix — Notifications On",
+    "body": "Daily/weekly/monthly close + drawdown alerts will now arrive"
+  },
+  "Pdf": {
+    "title": "KOÇ MATRIX ULTRA — MONTHLY SUMMARY",
+    "period": "Period: {period}",
+    "generated": "Generated: {date}",
+    "basicMetrics": "BASIC METRICS",
+    "totalTrades": "Total Trades",
+    "winRate": "Win Rate",
+    "profitFactor": "Profit Factor",
+    "expectancy": "Expectancy",
+    "totalR": "Total R",
+    "totalCash": "Total $",
+    "riskOfRuin": "Risk of Ruin",
+    "breakdown": "BREAKDOWN",
+    "noData": "No data"
+  }
+}
