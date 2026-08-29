@@ -34,12 +34,12 @@ export const mockBids: Order[] = Array.from({ length: 7 }, (_, i) => ({
   price: 67842 - (i+1)*12.5,
   amount: Number((Math.random()*1.5).toFixed(3)),
   total: 0,
-  side: "bid"
+  side: "bid" as const
 })).map(o=>({...o, total: o.price*o.amount}))
 
 export const mockAsks: Order[] = Array.from({ length: 7 }, (_, i) => ({
   price: 67842 + (i+1)*12.5,
   amount: Number((Math.random()*1.5).toFixed(3)),
   total: 0,
-  side: "ask"
+  side: "ask" as const
 })).map(o=>({...o, total: o.price*o.amount}))

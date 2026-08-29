@@ -39,6 +39,9 @@ pg_data/
 # Media & uploads
 backend/media/
 frontend/public/icon-*.png
+frontend/public/sw.js
+frontend/public/workbox-*.js
+frontend/public/sitemap.xml
 
 # Build
 dist/

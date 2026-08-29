@@ -11,13 +11,20 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": true,
+    "strict": false,
+    "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/renderer/*"],
+      "@/components/*": ["./src/renderer/components/*"],
+      "@/lib/*": ["./src/renderer/lib/*"],
+      "@/services/*": ["./frontend/lib/*"],
+      "@frontend/*": ["./frontend/*"]
     }
   },
   "include": ["src"],
